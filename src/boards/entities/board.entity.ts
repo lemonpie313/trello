@@ -14,7 +14,7 @@ export class Board {
   @PrimaryGeneratedColumn({ unsigned: true })
   id: number;
 
-  @Column({ unsigned: true })
+  @Column({ unsigned: true, nullable: true })
   ownerID: number;
 
   /**
