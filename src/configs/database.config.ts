@@ -1,6 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { Board } from 'src/boards/entities/board.entity';
+import { Cards } from 'src/cards/entities/cards.entity';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 export const typeOrmModuleOptions = {
@@ -12,7 +13,7 @@ export const typeOrmModuleOptions = {
     host: configService.get('DB_HOST'),
     port: configService.get('DB_PORT'),
     database: configService.get('DB_NAME'),
-    entities: [Board],
+    entities: [Cards, Board],
     synchronize: configService.get('DB_SYNC'),
     logging: true,
   }),
