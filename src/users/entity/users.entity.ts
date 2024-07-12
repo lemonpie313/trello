@@ -34,7 +34,7 @@ export class User {
   @ApiProperty()
   @IsNotEmpty({message:'소개를 작성해주세요.'})
   @IsString()
-  @Column()
+  @Column({type:'text'})
   bio:string
 
         /**
