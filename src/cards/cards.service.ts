@@ -22,4 +22,15 @@ export class CardsService {
       });
       return card;
     }
+
+    async readAllCards(listId) {
+      const cards = await this.cardReporitory.find({
+        where: {
+          // list: {
+          //   listId,
+          // }
+        }
+      });
+      return cards;
+    }
 }
