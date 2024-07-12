@@ -27,8 +27,8 @@ export class CommentsService {
   }
 
   //댓글 조회
-  async findAll() {
-    const comments = this.commentRepository.find()
+  async findAll(cardId: number) {
+    const comments = this.commentRepository.find({where: {cardId}})
 
     return comments
   }
