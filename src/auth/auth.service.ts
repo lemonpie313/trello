@@ -2,10 +2,10 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entity/users.entity';
 import { Repository } from 'typeorm';
-import { SignUpDto } from './Dto/sign-up.dto';
+import { SignUpDto } from './dto/sign-up.dto';
 import bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
-import { SignInDto } from './Dto/sign-in.dto';
+import { SignInDto } from './dto/sign-in.dto';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
