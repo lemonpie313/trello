@@ -73,4 +73,5 @@ export class Cards {
 
   @OneToMany(() => Checklists, (checklists) => checklists.cards)
   checklists: Checklists[];
+
 }

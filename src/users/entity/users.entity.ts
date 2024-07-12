@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString, IsStrongPassword } from 'class-validator';
 import { Members } from 'src/boards/entities/member.entity';
@@ -10,6 +11,12 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+=======
+import { ApiProperty } from "@nestjs/swagger";
+import { IsEmail, IsNotEmpty, IsString, IsStrongPassword } from "class-validator";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Comment } from "src/comments/entities/comment.entity";
+>>>>>>> a50d4c9 (update. 댓글 생성 기능)
 
 @Entity('users')
 export class User {
@@ -62,6 +69,7 @@ export class User {
   createAt: Date;
 
   @UpdateDateColumn()
+<<<<<<< HEAD
   updateAt: Date;
 
   @OneToMany(() => Members, (member) => member.user)
@@ -70,3 +78,11 @@ export class User {
   // @OneToMany(() => Workers, (workers) => workers.user)
   // workers: Workers[];
 }
+=======
+  updateAt:Date
+
+
+  @OneToMany(() => Comment, comment => comment.user)
+  comments: Comment[]
+}
+>>>>>>> a50d4c9 (update. 댓글 생성 기능)
