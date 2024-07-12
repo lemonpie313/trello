@@ -13,7 +13,7 @@ export class Cards {
   @PrimaryGeneratedColumn()
   cardId: number;
 
-  @IsNotEmpty()
+  @IsNotEmpty() // 배열로 받아......????
   @IsString()
   @Column({ type: 'varchar', nullable: false })
   member: string;
@@ -35,6 +35,7 @@ export class Cards {
   @IsString()
   @Column({ type: 'varchar', nullable: false })
   description: string;
+
 
   /**
    * 카드 색상
