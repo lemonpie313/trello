@@ -49,22 +49,41 @@ export class CommentsController {
 
   /**
    * 댓글 수정
-   * @param commentId 
+   * @param cardId 
+   * @param boardId 
+   * @param listId 
    * @param commentDto 
    * @returns 
    */
   @Patch(':commentId')
-  update(@Param('commentId') id: string, @Body() commentDto: CommentDto) {
-    return this.commentsService.update(+id, commentDto);
+  async update(@Param('commentId') commentId: number, @Param('cardId') cardId: number, @Query('boardId') boardId: number, @Query('listId') listId: number, @Body() commentDto: CommentDto) {
+    const userId = 1
+    const data = await this.commentsService.update( commentId, userId, commentDto);
+
+    return {
+      status: HttpStatus.OK,
+      message: '댓글 수정에 성공했습니다.',
+      data
+    }
   }
 
   /**
    * 댓글 삭제
-   * @param commentId 
+   * @param cardId 
+   * @param boardId 
+   * @param listId 
+   * @param commentDto 
    * @returns 
    */
   @Delete(':commentId')
-  remove(@Param('commentId') id: string) {
-    return this.commentsService.remove(+id);
+  async remove(@Param('commentId') commentId: number, @Param('cardId') cardId: number, @Query('boardId') boardId: number, @Query('listId') listId: number, @Body() commentDto: CommentDto) {
+    const userId = 1
+    const data = await this.commentsService.update( commentId, userId, commentDto);
+
+    return {
+      status: HttpStatus.OK,
+      message: '댓글 삭제에 성공했습니다.',
+      data
+    }
   }
 }
