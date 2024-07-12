@@ -1,9 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, Query, UseGuards, Req } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CommentsService } from './comments.service';
 import { CommentDto } from './dto/comment.dto';
+import { AuthGuard } from '@nestjs/passport';
 
-@ApiTags('댓글')
+@ApiTags('Comment API')
+@ApiBearerAuth()
+@UseGuards(AuthGuard('jwt'))
 @Controller('cards/:cardId/comments')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
@@ -16,9 +19,10 @@ export class CommentsController {
    * @param commentDto 
    * @returns 
    */
+
   @Post()
-  async create(@Param('cardId') cardId: number, @Query('boardId') boardId: number, @Query('listId') listId: number, @Body() commentDto: CommentDto) {
-     const userId = 1
+  async create(@Req() req, @Param('cardId') cardId: number, @Query('boardId') boardId: number, @Query('listId') listId: number, @Body() commentDto: CommentDto) {
+     const userId = req.user.id
       const data = await this.commentsService.create( cardId, userId, commentDto);
 
       return {
@@ -38,7 +42,7 @@ export class CommentsController {
    */
   @Get()
   async findAll(@Param('cardId') cardId: number, @Query('boardId') boardId: number, @Query('listId') listId: number) {
-    const data = await this.commentsService.findAll()
+    const data = await this.commentsService.findAll(cardId)
     
     return {
       status: HttpStatus.OK,
@@ -56,8 +60,8 @@ export class CommentsController {
    * @returns 
    */
   @Patch(':commentId')
-  async update(@Param('commentId') commentId: number, @Param('cardId') cardId: number, @Query('boardId') boardId: number, @Query('listId') listId: number, @Body() commentDto: CommentDto) {
-    const userId = 1
+  async update(@Req() req, @Param('commentId') commentId: number, @Param('cardId') cardId: number, @Query('boardId') boardId: number, @Query('listId') listId: number, @Body() commentDto: CommentDto) {
+    const userId = req.user.id
     const data = await this.commentsService.update( commentId, userId, commentDto);
 
     return {
@@ -76,9 +80,9 @@ export class CommentsController {
    * @returns 
    */
   @Delete(':commentId')
-  async remove(@Param('commentId') commentId: number, @Param('cardId') cardId: number, @Query('boardId') boardId: number, @Query('listId') listId: number, @Body() commentDto: CommentDto) {
-    const userId = 1
-    const data = await this.commentsService.update( commentId, userId, commentDto);
+  async remove(@Req() req, @Param('commentId') commentId: number, @Param('cardId') cardId: number, @Query('boardId') boardId: number, @Query('listId') listId: number, @Body() commentDto: CommentDto) {
+    const userId = req.user.id
+    const data = await this.commentsService.remove( commentId, userId);
 
     return {
       status: HttpStatus.OK,
