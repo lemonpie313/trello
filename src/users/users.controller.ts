@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtPayload } from 'src/auth/interface/jwt-payload.interface';
-import { usersUpdateDto } from './Dto/user.update.dto';
+import { usersUpdateDto } from './dto/user.update.dto';
 
 @ApiTags('USER API')
 @Controller('users')
@@ -11,7 +11,7 @@ export class UsersController {
   constructor(private readonly usersService:UsersService){}
 
   /**
-   * findMe
+   * 개인정보조회
    * @param req 
    * @returns
    */
@@ -30,7 +30,7 @@ export class UsersController {
 
 
   /**
-   * updateMe
+   * 개인정보수정
    * @param req 
    * @param usersUpdateDto
    * @returns
