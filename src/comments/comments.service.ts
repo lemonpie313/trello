@@ -26,8 +26,11 @@ export class CommentsService {
     return savedComment;
   }
 
-  findAll() {
-    return `This action returns all comments`;
+  //댓글 조회
+  async findAll() {
+    const comments = this.commentRepository.find()
+
+    return comments
   }
 
   findOne(id: number) {
