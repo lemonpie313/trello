@@ -1,6 +1,5 @@
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
-import { User } from "src/users/entity/users.entity";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 
 export const typeOrmModuleOptions = {
