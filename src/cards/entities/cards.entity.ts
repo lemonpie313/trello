@@ -15,7 +15,7 @@ export class Cards {
 
   @IsNotEmpty()
   @IsString()
-  @Column()
+  @Column({ type: 'varchar', nullable: false })
   member: string;
 
   /**
@@ -24,7 +24,7 @@ export class Cards {
    */
   @IsNotEmpty({ message: '제목을 입력해주세요.' })
   @IsString()
-  @Column()
+  @Column({ type: 'varchar', nullable: false })
   title: string;
 
   /**
@@ -33,7 +33,7 @@ export class Cards {
    */
   @IsNotEmpty({ message: '상세 설명을 입력해주세요.' })
   @IsString()
-  @Column()
+  @Column({ type: 'varchar', nullable: false })
   description: string;
 
   /**
@@ -42,17 +42,15 @@ export class Cards {
    */
   @IsNotEmpty({ message: '카드 색상을 입력해주세요.'})
   @IsHexColor()
-  @Column()
+  @Column({ type: 'varchar', nullable: false })
   color: string;
 
-  @IsNotEmpty()
   @IsDate()
-  @Column()
+  @Column({ type: 'varchar', nullable: false })
   startAt: Date;
 
-  @IsNotEmpty()
   @IsDate()
-  @Column()
+  @Column({ type: 'varchar', nullable: true })
   deadline: Date;
 
   @CreateDateColumn()
