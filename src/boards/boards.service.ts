@@ -1,17 +1,28 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Board } from './entities/board.entity';
 import { Like, Repository } from 'typeorm';
 import { CreateBoardDto } from './dtos/create-board.dto';
 import { UpdateBoardDto } from './dtos/update-board.dto';
+import { BOARD_ROLE } from './types/board-roles.type';
+import { Member } from './entities/member.entity';
 
 @Injectable()
 export class BoardsService {
-  constructor(@InjectRepository(Board) private readonly showReporitory: Repository<Board>) {}
+  constructor(
+    @InjectRepository(Board) private readonly boardReporitory: Repository<Board>,
+    @InjectRepository(Member) private readonly memberReporitory: Repository<Member>
+  ) {}
 
-  async create(createBoardDto: CreateBoardDto) {
-    const board = await this.showReporitory.save({
+  async create(createBoardDto: CreateBoardDto, userId: number) {
+    const board = await this.boardReporitory.save({
       ...createBoardDto,
+      members: [
+        {
+          userId,
+          role: BOARD_ROLE.OWNER,
+        },
+      ],
     });
     return board;
   }
@@ -21,7 +32,7 @@ export class BoardsService {
     if (title) {
       condition = { title: Like(`${title}%`) };
     }
-    const boards = await this.showReporitory.find({
+    const boards = await this.boardReporitory.find({
       where: {
         ...condition,
       },
@@ -32,9 +43,9 @@ export class BoardsService {
     return boards;
   }
 
-  async findOne(id: number) {
-    const board = await this.showReporitory.findOne({
-      where: { id },
+  async findOne(boardId: number) {
+    const board = await this.boardReporitory.findOne({
+      where: { boardId },
     });
     if (!board) {
       throw new NotFoundException('존재하지 않는 보드입니다.');
@@ -43,16 +54,16 @@ export class BoardsService {
     return board;
   }
 
-  async update(updateBoardDto: UpdateBoardDto, id: number) {
+  async update(updateBoardDto: UpdateBoardDto, boardId: number) {
     const { title, background, description } = updateBoardDto;
-    const board = await this.showReporitory.findOne({
-      where: { id },
+    const board = await this.boardReporitory.findOne({
+      where: { boardId },
     });
     if (!board) {
       throw new NotFoundException('보드 정보를 찾을 수 없습니다.');
     }
-    const boardUpdate = await this.showReporitory.update(
-      { id },
+    const boardUpdate = await this.boardReporitory.update(
+      { boardId },
       {
         ...(title && { title }),
         ...(background && { background }),
@@ -62,16 +73,23 @@ export class BoardsService {
     return boardUpdate;
   }
 
-  async delete(id: number) {
-    const board = await this.showReporitory.findOne({
-      where: { id },
+  async delete(boardId: number) {
+    const board = await this.boardReporitory.findOne({
+      where: { boardId },
     });
     if (!board) {
       throw new NotFoundException('보드 정보를 찾을 수 없습니다.');
     }
-    const boardDelete = await this.showReporitory.delete({ id });
+    const boardDelete = await this.boardReporitory.delete({ boardId });
     return boardDelete;
   }
 
-  async invite(id: number, userId: number) {}
+  async invite(boardId: number, userId: number) {
+    const member = await this.memberReporitory.findOne({ where: { userId } });
+    if (member) {
+      throw new BadRequestException('이미 등록된 멤버입니다.');
+    }
+    const invite = await this.memberReporitory.save({ boardId, userId });
+    return invite;
+  }
 }
