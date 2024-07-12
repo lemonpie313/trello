@@ -23,13 +23,14 @@ async function bootstrap() {
     .setTitle('trello')
     .setDescription('API description of trello project')
     .setVersion('1.0')
+    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document, {
     swaggerOptions: {
-      persistAuthorization: true,
-      tagsSorter: 'alpha',
-      operationsSorter: 'alpha',
+      persistAuthorization: true, //새로고침 시에도 JWT 유지
+      tagsSorter: 'alpha', // API 그룹 정렬 알파벳순
+      operationsSorter: 'alpha', //API 그룹내에서도 정렬 알파벳순
     },
   });
 
