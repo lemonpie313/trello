@@ -63,4 +63,5 @@ export class Cards {
 
   @DeleteDateColumn()
   deletedAt: Date;
+    comments: any;
 }
