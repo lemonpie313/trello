@@ -33,9 +33,6 @@ export class CommentsService {
     return comments
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} comment`;
-  }
 
   //댓글 수정
   async update(commentId: number, userId: number, commentDto: CommentDto) {
