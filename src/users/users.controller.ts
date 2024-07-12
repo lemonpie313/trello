@@ -11,8 +11,8 @@ export class UsersController {
   @Get('/me')
   async findMe() {
     return {
-        statusCode: HttpStatus.OK,
-        message: '테스트 성공.',
-      };
-    }
+      statusCode: HttpStatus.OK,
+      message: '테스트 성공.',
+    };
+  }
 }

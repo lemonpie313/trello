@@ -15,6 +15,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { GetCardsByListIdDto } from './dtos/get-cards-by-list-id.dto';
 import { UpdateCardDto } from './dtos/update-card.dto';
 import { CreateCardDeadlineDto } from './dtos/create-card-deadline.dto';
+import { CreateWorkerDto } from './dtos/create-worker.dto';
 
 @ApiTags('CARD API')
 @Controller('cards')
@@ -100,10 +101,29 @@ export class CardsController {
    * @returns
    */
   @Patch('/:cardId/deadline')
-  async updateDeadline(@Param('cardId') cardId: number, @Body() createCardDeadlineDto: CreateCardDeadlineDto) {
+  async updateDeadline(
+    @Param('cardId') cardId: number,
+    @Body() createCardDeadlineDto: CreateCardDeadlineDto
+  ) {
     const card = await this.cardsService.updateDeadline(cardId, createCardDeadlineDto);
     return {
       status: HttpStatus.OK,
+      message: '카드 마감날짜 지정이 완료되었습니다.',
+      data: {
+        card,
+      },
+    };
+  }
+
+  /**
+   * 할당자 지정
+   * @returns
+   */
+  @Post('/:cardId/workers')
+  async createWorkers(@Param('cardId') cardId: number, @Body() createWorkerDto: CreateWorkerDto) {
+    const card = await this.cardsService.createWorkers(cardId, createWorkerDto);
+    return {
+      status: HttpStatus.CREATED,
       message: '카드 마감날짜 지정이 완료되었습니다.',
       data: {
         card,

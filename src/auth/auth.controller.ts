@@ -5,29 +5,27 @@ import { SignInDto } from './Dto/sign-in.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService){}
-
+  constructor(private readonly authService: AuthService) {}
 
   @Post('/sign-up')
-   async signUp(@Body() signUpDto:SignUpDto){
-      const data = await this.authService.signUp(signUpDto)
+  async signUp(@Body() signUpDto: SignUpDto) {
+    const data = await this.authService.signUp(signUpDto);
 
-      return  {
-        statuscode: HttpStatus.OK,
-        message: '회원가입에 성공하셧습니다.',
-        data: {...data, password:undefined}
-      }
-   }
+    return {
+      statuscode: HttpStatus.OK,
+      message: '회원가입에 성공하셧습니다.',
+      data: { ...data, password: undefined },
+    };
+  }
 
   @Post('/sign-in')
-   async signIn(@Body() signInDto:SignInDto){
+  async signIn(@Body() signInDto: SignInDto) {
     const data = await this.authService.signIn(signInDto);
 
-    return  {
+    return {
       statuscode: HttpStatus.OK,
       message: '로그인에 성공하셧습니다.',
-      data
-    }
-   }
+      data,
+    };
+  }
 }
-  

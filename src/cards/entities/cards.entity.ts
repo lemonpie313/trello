@@ -4,19 +4,16 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Workers } from './workers.entity';
 
 @Entity('cards')
 export class Cards {
   @PrimaryGeneratedColumn()
   cardId: number;
-
-  @IsNotEmpty() // 배열로 받아......????
-  @IsString()
-  @Column({ type: 'varchar', nullable: false })
-  member: string;
 
   /**
    * 제목
@@ -36,12 +33,11 @@ export class Cards {
   @Column({ type: 'varchar', nullable: false })
   description: string;
 
-
   /**
    * 카드 색상
    * @example "ffffff"
    */
-  @IsNotEmpty({ message: '카드 색상을 입력해주세요.'})
+  @IsNotEmpty({ message: '카드 색상을 입력해주세요.' })
   @IsHexColor()
   @Column({ type: 'varchar', nullable: false })
   color: string;
@@ -62,4 +58,7 @@ export class Cards {
 
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @OneToMany(() => Workers, (workers) => workers.card)
+  workers: Workers;
 }

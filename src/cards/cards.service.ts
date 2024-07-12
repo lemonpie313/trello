@@ -6,10 +6,15 @@ import { Repository } from 'typeorm';
 import { UpdateCardDto } from './dtos/update-card.dto';
 import _ from 'lodash';
 import { CreateCardDeadlineDto } from './dtos/create-card-deadline.dto';
+import { CreateWorkerDto } from './dtos/create-worker.dto';
+import { Workers } from './entities/workers.entity';
 
 @Injectable()
 export class CardsService {
-  constructor(@InjectRepository(Cards) private readonly cardRepository: Repository<Cards>) {}
+  constructor(
+    @InjectRepository(Cards) private readonly cardsRepository: Repository<Cards>,
+    @InjectRepository(Workers) private readonly workersRepository: Repository<Workers>
+  ) {}
 
   async createCard(createCardDto: CreateCardDto) {
     const { title, description, color, startDate, startTime } = createCardDto;
@@ -18,7 +23,7 @@ export class CardsService {
       startAt = new Date(`${startDate} ${startTime}`);
     }
     startAt = new Date();
-    const card = await this.cardRepository.save({
+    const card = await this.cardsRepository.save({
       member: '와',
       title,
       description,
@@ -29,7 +34,7 @@ export class CardsService {
   }
 
   async readAllCards(listId: number) {
-    const cards = await this.cardRepository.find({
+    const cards = await this.cardsRepository.find({
       where: {
         // list: {
         //   listId,
@@ -47,14 +52,13 @@ export class CardsService {
   }
 
   async readCard(cardId: number) {
-    const card = await this.cardRepository.findOne({
+    const card = await this.cardsRepository.findOne({
       where: {
         cardId,
       },
       select: {
         cardId: true,
         title: true,
-        member: true,
         description: true,
         color: true,
         startAt: true,
@@ -83,7 +87,7 @@ export class CardsService {
       deadline = new Date(`${dueDate} ${dueTime}`);
     }
 
-    const card = await this.cardRepository.findOne({
+    const card = await this.cardsRepository.findOne({
       where: {
         cardId,
       },
@@ -96,7 +100,7 @@ export class CardsService {
     }
     // 사용자가 만든 카드가 아닐 경우 권한 없다고 에러
 
-    await this.cardRepository.update(
+    await this.cardsRepository.update(
       { cardId },
       {
         title,
@@ -107,7 +111,7 @@ export class CardsService {
       }
     );
 
-    const updatedCard = await this.cardRepository.findOne({
+    const updatedCard = await this.cardsRepository.findOne({
       where: {
         cardId,
       },
@@ -118,7 +122,6 @@ export class CardsService {
         color: true,
         startAt: true,
         deadline: true,
-        member: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -127,7 +130,7 @@ export class CardsService {
   }
 
   async deleteCard(cardId: number) {
-    const card = await this.cardRepository.findOne({
+    const card = await this.cardsRepository.findOne({
       where: {
         cardId,
       },
@@ -140,7 +143,7 @@ export class CardsService {
     }
     // 사용자가 만든 카드가 아닐 경우 권한 없다고 에러
 
-    await this.cardRepository.softDelete({
+    await this.cardsRepository.softDelete({
       cardId,
     });
   }
@@ -149,7 +152,7 @@ export class CardsService {
     const { dueDate, dueTime } = createCardDeadlineDto;
     const deadline = new Date(`${dueDate} ${dueTime}`);
 
-    const card = await this.cardRepository.findOne({
+    const card = await this.cardsRepository.findOne({
       where: {
         cardId,
       },
@@ -162,13 +165,13 @@ export class CardsService {
     }
     // 사용자가 만든 카드가 아닐 경우 권한 없다고 에러
 
-    await this.cardRepository.update(
+    await this.cardsRepository.update(
       { cardId },
       {
         deadline,
       }
     );
-    const updatedCard = await this.cardRepository.findOne({
+    const updatedCard = await this.cardsRepository.findOne({
       where: {
         cardId,
       },
@@ -179,11 +182,34 @@ export class CardsService {
         color: true,
         startAt: true,
         deadline: true,
-        member: true,
         createdAt: true,
         updatedAt: true,
       },
     });
     return updatedCard;
+  }
+
+  async createWorkers(cardId: number, createWorkerDto: CreateWorkerDto) {
+    const card = await this.cardsRepository.findOne({
+      where: {
+        cardId,
+      },
+    });
+    if (_.isNil(card)) {
+      throw new NotFoundException({
+        status: 404,
+        message: '해당 카드가 존재하지 않습니다.',
+      });
+    }
+    // workers 가 members에 해당되는지 봐야됨
+    const { workers } = createWorkerDto;
+    for (const memberId of workers) {
+      await this.workersRepository.save({
+        card: {
+          cardId,
+        },
+        memberId,
+      });
+    }
   }
 }

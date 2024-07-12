@@ -4,6 +4,6 @@ import { ListsService } from './lists.service';
 
 @Module({
   controllers: [ListsController],
-  providers: [ListsService]
+  providers: [ListsService],
 })
 export class ListsModule {}
