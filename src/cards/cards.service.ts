@@ -8,6 +8,7 @@ import _ from 'lodash';
 import { CreateCardDeadlineDto } from './dtos/create-card-deadline.dto';
 import { CreateWorkerDto } from './dtos/create-worker.dto';
 import { Workers } from './entities/workers.entity';
+import { LexoRank } from 'lexorank';
 
 @Injectable()
 export class CardsService {
@@ -21,14 +22,33 @@ export class CardsService {
     let startAt: Date;
     if (startDate && startTime) {
       startAt = new Date(`${startDate} ${startTime}`);
+    } else {
+      startAt = new Date();
     }
-    startAt = new Date();
+
+
+    const previousCards = await this.cardsRepository.find({
+      // where: {
+      //   cardId,
+      // },
+    });
+    let lexo: string;
+    if (previousCards.length == 0) {
+      lexo = LexoRank.middle().toString();
+    } else {
+      lexo = LexoRank.parse(previousCards[previousCards.length - 1].lexo)
+      .genNext()
+      .toString();
+    }
+
+    console.log(lexo);
+
     const card = await this.cardsRepository.save({
-      member: '와',
       title,
       description,
       color,
       startAt,
+      lexo,
     });
     return card;
   }
@@ -98,7 +118,7 @@ export class CardsService {
         message: '해당 카드가 존재하지 않습니다.',
       });
     }
-    // 사용자가 만든 카드가 아닐 경우 권한 없다고 에러
+    // 사용자가 속한 보드의 카드가 아닐 경우 에러 반환
 
     await this.cardsRepository.update(
       { cardId },
@@ -141,7 +161,7 @@ export class CardsService {
         message: '해당 카드가 존재하지 않습니다.',
       });
     }
-    // 사용자가 만든 카드가 아닐 경우 권한 없다고 에러
+    // 사용자가 속한 보드의 카드가 아닐 경우 에러 반환
 
     await this.cardsRepository.softDelete({
       cardId,

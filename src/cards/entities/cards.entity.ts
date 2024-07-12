@@ -50,6 +50,9 @@ export class Cards {
   @Column({ type: 'varchar', nullable: true })
   deadline: Date;
 
+  @Column({type: 'varchar', nullable: false})
+  lexo: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
