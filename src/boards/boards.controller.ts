@@ -9,10 +9,9 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CreateBoardDto } from './dtos/create-board.dto';
 import { BoardsService } from './boards.service';
-import { Board } from './entities/board.entity';
 import { UpdateBoardDto } from './dtos/update-board.dto';
 
 @ApiTags('보드')
@@ -40,6 +39,7 @@ export class BoardsController {
    * @returns
    */
   @Get()
+  @ApiQuery({ name: 'title', required: false })
   async findAll(@Query('title') title?: string) {
     const data = await this.boardService.findAll(title);
 
@@ -96,10 +96,9 @@ export class BoardsController {
     };
   }
 
-  //멤버 테이블 추가되면 작성하겠습니다.
-
   /**
    * 멤버 초대
+   * ,멤버 테이블 추가되면 작성
    * @param id
    * @returns
    */
