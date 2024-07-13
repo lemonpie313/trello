@@ -63,7 +63,7 @@ export class User {
 
   @UpdateDateColumn()
   updateAt: Date;
-
+  
   @OneToMany(() => Member, (member) => member.user)
   members: Member[];
 }
