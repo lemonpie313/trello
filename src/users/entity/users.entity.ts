@@ -5,7 +5,7 @@ import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateCol
 @Entity()
 export class User {
   @PrimaryGeneratedColumn({unsigned:true})
-  id:number
+  userId:number
 
   /**
    * 이메일
