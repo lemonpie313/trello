@@ -4,6 +4,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -62,6 +63,10 @@ export class Cards {
   @DeleteDateColumn()
   deletedAt: Date;
 
-  @OneToMany(() => Workers, (workers) => workers.card)
+  // ManyToOne(() => Lists, (lists) => lists.cards, { onDelete: 'CASCADE' })
+  // lists: Lists;
+
+
+  @OneToMany(() => Workers, (workers) => workers.cards)
   workers: Workers;
 }

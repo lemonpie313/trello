@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { User } from 'src/users/entity/users.entity';
-import { Member } from './member.entity';
+import { Members } from './member.entity';
 
 @Entity('boards')
 export class Board {
@@ -49,6 +49,6 @@ export class Board {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => Member, (member) => member.board, { cascade: true })
-  members: Member[];
+  @OneToMany(() => Members, (member) => member.board, { cascade: true })
+  members: Members[];
 }

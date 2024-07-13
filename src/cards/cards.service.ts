@@ -18,7 +18,9 @@ export class CardsService {
     @InjectRepository(Workers) private readonly workersRepository: Repository<Workers>
   ) {}
 
-  async createCard(createCardDto: CreateCardDto) {
+  async createCard(userId: number, createCardDto: CreateCardDto) {
+    // 인증(?)함수
+
     const { title, description, color, startDate, startTime } = createCardDto;
     let startAt: Date;
     if (startDate && startTime) {
@@ -29,7 +31,7 @@ export class CardsService {
 
     const previousCards = await this.cardsRepository.find({
       // where: {
-      //   cardId,
+      //   listId,
       // },
     });
     let lexoRank: string;
@@ -53,7 +55,9 @@ export class CardsService {
     return card;
   }
 
-  async readAllCards(listId: number) {
+  async readAllCards(userId: number, listId: number) {
+    // 인증(?)함수
+
     const cards = await this.cardsRepository.find({
       where: {
         // list: {
@@ -74,7 +78,9 @@ export class CardsService {
     return cards;
   }
 
-  async readCard(cardId: number) {
+  async readCard(userId: number, cardId: number) {
+    // 인증(?)함수
+
     const card = await this.cardsRepository.findOne({
       where: {
         cardId,
@@ -99,7 +105,9 @@ export class CardsService {
     return card;
   }
 
-  async updateCard(cardId: number, updateCardDto: UpdateCardDto) {
+  async updateCard(userId: number, cardId: number, updateCardDto: UpdateCardDto) {
+    // 인증(?)함수
+
     const { title, description, color, startDate, startTime, dueDate, dueTime } = updateCardDto;
     let startAt: Date;
     let deadline: Date;
@@ -152,7 +160,9 @@ export class CardsService {
     return updatedCard;
   }
 
-  async deleteCard(cardId: number) {
+  async deleteCard(userId: number, cardId: number) {
+    // 인증(?)함수
+
     const card = await this.cardsRepository.findOne({
       where: {
         cardId,
@@ -171,7 +181,13 @@ export class CardsService {
     });
   }
 
-  async updateDeadline(cardId: number, createCardDeadlineDto: CreateCardDeadlineDto) {
+  async updateDeadline(
+    userId: number,
+    cardId: number,
+    createCardDeadlineDto: CreateCardDeadlineDto
+  ) {
+    // 인증(?)함수
+
     const { dueDate, dueTime } = createCardDeadlineDto;
     const deadline = new Date(`${dueDate} ${dueTime}`);
 
@@ -212,7 +228,9 @@ export class CardsService {
     return updatedCard;
   }
 
-  async createWorkers(cardId: number, createWorkerDto: CreateWorkerDto) {
+  async createWorkers(userId: number, cardId: number, createWorkerDto: CreateWorkerDto) {
+    // 인증(?)함수
+
     const card = await this.cardsRepository.findOne({
       where: {
         cardId,
@@ -236,7 +254,9 @@ export class CardsService {
     }
   }
 
-  async updateOrder(cardId: number, updateOrderDto: UpdateOrderDto) {
+  async updateOrder(userId: number, cardId: number, updateOrderDto: UpdateOrderDto) {
+    // 인증(?)함수
+
     const { rank } = updateOrderDto;
     const cards = await this.cardsRepository.find({
       // where: {
