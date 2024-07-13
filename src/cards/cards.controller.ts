@@ -16,6 +16,7 @@ import { GetCardsByListIdDto } from './dtos/get-cards-by-list-id.dto';
 import { UpdateCardDto } from './dtos/update-card.dto';
 import { CreateCardDeadlineDto } from './dtos/create-card-deadline.dto';
 import { CreateWorkerDto } from './dtos/create-worker.dto';
+import { UpdateOrderDto } from './dtos/update-order.dto';
 
 @ApiTags('CARD API')
 @Controller('cards')
@@ -124,9 +125,28 @@ export class CardsController {
     const card = await this.cardsService.createWorkers(cardId, createWorkerDto);
     return {
       status: HttpStatus.CREATED,
-      message: '카드 마감날짜 지정이 완료되었습니다.',
+      message: '카드 할당자 지정이 완료되었습니다.',
       data: {
         card,
+      },
+    };
+  }
+
+  /**
+   * 카드 순서 수정
+   * @returns
+   */
+  @Patch('/:cardId/order')
+  async updateOrder(
+    @Param('cardId') cardId: number,
+    @Query() updateOrderDto: UpdateOrderDto,
+  ) {
+    const cards = await this.cardsService.updateOrder(cardId, updateOrderDto);
+    return {
+      status: HttpStatus.OK,
+      message: '카드 순서 수정이 완료되었습니다.',
+      data: {
+        cards,
       },
     };
   }

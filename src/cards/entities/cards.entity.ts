@@ -51,7 +51,7 @@ export class Cards {
   deadline: Date;
 
   @Column({type: 'varchar', nullable: false})
-  lexo: string;
+  lexoRank: string;
 
   @CreateDateColumn()
   createdAt: Date;

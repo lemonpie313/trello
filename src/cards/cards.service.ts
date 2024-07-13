@@ -9,6 +9,7 @@ import { CreateCardDeadlineDto } from './dtos/create-card-deadline.dto';
 import { CreateWorkerDto } from './dtos/create-worker.dto';
 import { Workers } from './entities/workers.entity';
 import { LexoRank } from 'lexorank';
+import { UpdateOrderDto } from './dtos/update-order.dto';
 
 @Injectable()
 export class CardsService {
@@ -26,29 +27,28 @@ export class CardsService {
       startAt = new Date();
     }
 
-
     const previousCards = await this.cardsRepository.find({
       // where: {
       //   cardId,
       // },
     });
-    let lexo: string;
+    let lexoRank: string;
     if (previousCards.length == 0) {
-      lexo = LexoRank.middle().toString();
+      lexoRank = LexoRank.middle().toString();
     } else {
-      lexo = LexoRank.parse(previousCards[previousCards.length - 1].lexo)
-      .genNext()
-      .toString();
+      lexoRank = LexoRank.parse(previousCards[previousCards.length - 1].lexoRank)
+        .genNext()
+        .toString();
     }
 
-    console.log(lexo);
+    console.log(lexoRank);
 
     const card = await this.cardsRepository.save({
       title,
       description,
       color,
       startAt,
-      lexo,
+      lexoRank,
     });
     return card;
   }
@@ -66,6 +66,9 @@ export class CardsService {
         color: true,
         createdAt: true,
         updatedAt: true,
+      },
+      order: {
+        lexoRank: 'asc',
       },
     });
     return cards;
@@ -231,5 +234,54 @@ export class CardsService {
         memberId,
       });
     }
+  }
+
+  async updateOrder(cardId: number, updateOrderDto: UpdateOrderDto) {
+    const { rank } = updateOrderDto;
+    const cards = await this.cardsRepository.find({
+      // where: {
+      //   cardId,
+      // },
+      order: {
+        lexoRank: 'asc',
+      },
+    });
+    let lexoRank: string;
+    if (rank >= cards.length) {
+      lexoRank = LexoRank.parse(cards[cards.length - 2].lexoRank)
+        .genNext()
+        .toString();
+    } else if (rank <= 1) {
+      lexoRank = LexoRank.parse(cards[0].lexoRank).genPrev().toString();
+    } else {
+      lexoRank = LexoRank.parse(cards[rank - 1].lexoRank)
+        .between(LexoRank.parse(cards[rank].lexoRank))
+        .toString();
+    }
+
+    await this.cardsRepository.update(
+      { cardId },
+      {
+        lexoRank,
+      }
+    );
+    const updatedCards = await this.cardsRepository.find({
+      where: {
+        // list: {
+        //   listId,
+        // }
+      },
+      select: {
+        cardId: true,
+        title: true,
+        color: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+      order: {
+        lexoRank: 'asc',
+      },
+    });
+    return updatedCards;
   }
 }
