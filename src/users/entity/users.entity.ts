@@ -1,9 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString, IsStrongPassword } from 'class-validator';
+import { Board } from 'src/boards/entities/board.entity';
+import { Member } from 'src/boards/entities/member.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -60,4 +63,7 @@ export class User {
 
   @UpdateDateColumn()
   updateAt: Date;
+
+  @OneToMany(() => Member, (member) => member.user)
+  members: Member[];
 }
