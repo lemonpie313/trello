@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString, IsStrongPassword } from 'class-validator';
-import { Board } from 'src/boards/entities/board.entity';
 import { Member } from 'src/boards/entities/member.entity';
 import {
   Column,
