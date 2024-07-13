@@ -8,13 +8,20 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CreateBoardDto } from './dtos/create-board.dto';
 import { BoardsService } from './boards.service';
 import { UpdateBoardDto } from './dtos/update-board.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { BOARD_ROLE } from './types/board-roles.type';
 
-@ApiTags('보드')
+@ApiTags('Board API')
+@ApiBearerAuth()
+@UseGuards(AuthGuard('jwt'))
 @Controller('boards')
 export class BoardsController {
   constructor(private readonly boardService: BoardsService) {}
@@ -24,9 +31,12 @@ export class BoardsController {
    * @param createBoardDto
    * @returns
    */
+
+  @UseGuards(AuthGuard('jwt'))
   @Post()
-  async create(@Body() createBoardDto: CreateBoardDto) {
-    const data = await this.boardService.create(createBoardDto);
+  async create(@Body() createBoardDto: CreateBoardDto, @Request() req) {
+    const userId = req.user.id;
+    const data = await this.boardService.create(createBoardDto, userId);
     return {
       statusCode: HttpStatus.CREATED,
       message: '보드 생성에 성공했습니다.',
@@ -55,6 +65,7 @@ export class BoardsController {
    * @param id
    * @returns
    */
+  @ApiParam({ name: 'id', description: '보드 ID' })
   @Get(':id')
   async findOne(@Param('id') id: number) {
     const data = await this.boardService.findOne(id);
@@ -68,9 +79,10 @@ export class BoardsController {
   /**
    * 보드 수정
    * @param id
-   * @param createBoardDto
+   * @param updateBoardDto
    * @returns
    */
+  @ApiParam({ name: 'id', description: '보드 ID' })
   @Patch(':id')
   async update(@Param('id') id: number, @Body() updateBoardDto: UpdateBoardDto) {
     const data = await this.boardService.update(updateBoardDto, id);
@@ -86,6 +98,7 @@ export class BoardsController {
    * @param id
    * @returns
    */
+  @ApiParam({ name: 'id', description: '보드 ID' })
   @Delete(':id')
   async delete(@Param('id') id: number) {
     const data = await this.boardService.delete(id);
@@ -98,12 +111,27 @@ export class BoardsController {
 
   /**
    * 멤버 초대
-   * ,멤버 테이블 추가되면 작성
-   * @param id
+   * @param userId
    * @returns
    */
-  @Post(':id/members')
-  async invite(@Param('id') id: number, @Body() userId: number) {
-    const data = await this.boardService.invite(id, userId);
+  @ApiParam({ name: 'boardId', description: '보드 ID' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        userId: { type: 'number', example: 1, description: '사용자 ID' },
+      },
+    },
+    description: '사용자 ID',
+  })
+  @Post(':boardId/members')
+  async invite(@Param('boardId') boardId: number, @Body('userId') userId: number) {
+    const data = await this.boardService.invite(boardId, userId);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: '멤버 초대에 성공했습니다.',
+      data,
+    };
   }
 }
