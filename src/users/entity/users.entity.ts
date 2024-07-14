@@ -12,8 +12,9 @@ import {
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn({ unsigned: true })
-  id: number;
+
+  @PrimaryGeneratedColumn({unsigned:true})
+  userId:number
 
   /**
    * 이메일
