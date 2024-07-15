@@ -10,6 +10,8 @@ import {
   Query,
   UseGuards,
   Request,
+  UseInterceptors,
+  Req,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CreateBoardDto } from './dtos/create-board.dto';
@@ -18,6 +20,7 @@ import { UpdateBoardDto } from './dtos/update-board.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { BOARD_ROLE } from './types/board-roles.type';
+// import { TransformInterceptor } from './interceptors/board.interceptors';
 
 @ApiTags('Board API')
 @ApiBearerAuth()
@@ -50,8 +53,10 @@ export class BoardsController {
    */
   @Get()
   @ApiQuery({ name: 'title', required: false })
-  async findAll(@Query('title') title?: string) {
-    const data = await this.boardService.findAll(title);
+  async findAll(@Request() req, @Query('title') title?: string) {
+    const userId = req.user.id;
+    console.log(req.user);
+    const data = await this.boardService.findAll(title, userId);
 
     return {
       statusCode: HttpStatus.OK,
@@ -67,7 +72,8 @@ export class BoardsController {
    */
   @ApiParam({ name: 'id', description: '보드 ID' })
   @Get(':id')
-  async findOne(@Param('id') id: number) {
+  async findOne(@Request() req, @Param('id') id: number) {
+    const userId = req.user.id;
     const data = await this.boardService.findOne(id);
     return {
       statusCode: HttpStatus.OK,

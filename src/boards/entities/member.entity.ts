@@ -32,8 +32,10 @@ export class Member {
   createAt: Date;
 
   @ManyToOne((type) => User, (user) => user.members, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
   @ManyToOne((type) => Board, (board) => board.members, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'board_id' })
   board: Board;
 }

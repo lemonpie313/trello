@@ -11,11 +11,10 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('users')
 export class User {
-
-  @PrimaryGeneratedColumn({unsigned:true})
-  userId:number
+  @PrimaryGeneratedColumn({ unsigned: true })
+  userId: number;
 
   /**
    * 이메일
