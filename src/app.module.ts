@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { BoardsModule } from './boards/boards.module';
 import { ListsModule } from './lists/lists.module';
 import { CardsModule } from './cards/cards.module';
+import { NotificationsGateway } from './notifications/notifications.gateway';
 
 @Module({
   imports: [
@@ -24,6 +25,6 @@ import { CardsModule } from './cards/cards.module';
     CardsModule,
   ],
   controllers: [AppController],
-  providers: [],
+  providers: [NotificationsGateway],
 })
 export class AppModule {}
