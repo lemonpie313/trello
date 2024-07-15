@@ -18,7 +18,8 @@ import { AuthService } from 'src/auth/auth.service';
 export class BoardsService {
   constructor(
     @InjectRepository(Board) private readonly boardReporitory: Repository<Board>,
-    @InjectRepository(Members) private readonly memberReporitory: Repository<Members>
+    @InjectRepository(Members) private readonly memberReporitory: Repository<Members>,
+    private readonly authService: AuthService
   ) {}
 
   async create(createBoardDto: CreateBoardDto, userId: number) {
@@ -31,7 +32,6 @@ export class BoardsService {
         },
       ],
     });
-
     return board;
   }
 
@@ -63,8 +63,19 @@ export class BoardsService {
     return board;
   }
 
-  async update(updateBoardDto: UpdateBoardDto, boardId: number) {
+  async findOneBoard(boardId: number, userId: number) {
+    await this.authService.validateMember(boardId, userId);
+    const board = this.findOne(boardId);
+    if (!board) {
+      throw new NotFoundException('존재하지 않는 보드입니다.');
+    }
+    return board;
+  }
+
+  async update(updateBoardDto: UpdateBoardDto, boardId: number, userId: number) {
     const { title, background, description } = updateBoardDto;
+
+    await this.authService.validateOwner(boardId, userId);
     const board = await this.findOne(boardId);
     if (!board) {
       throw new NotFoundException('보드 정보를 찾을 수 없습니다.');
@@ -80,29 +91,27 @@ export class BoardsService {
     return this.findOne(boardId);
   }
 
-  async delete(boardId: number) {
+  async delete(boardId: number, userId: number) {
+    await this.authService.validateOwner(boardId, userId);
     const board = await this.boardReporitory.findOne({
       where: { boardId },
     });
     if (!board) {
       throw new NotFoundException('보드 정보를 찾을 수 없습니다.');
     }
-    const boardDelete = await this.boardReporitory.delete({ boardId });
+    await this.boardReporitory.delete({ boardId });
     return boardId;
   }
 
-  async invite(boardId: number, userId: number) {
-    const member = await this.memberReporitory.findOne({ where: { userId, boardId } });
-
+  async invite(boardId: number, InviteUserId: number, userId: number) {
+    await this.authService.validateOwner(boardId, userId);
+    const member = await this.memberReporitory.findOne({
+      where: { userId: InviteUserId, boardId },
+    });
     if (member) {
       throw new BadRequestException('이미 등록된 멤버입니다.');
     }
-    const invite = await this.memberReporitory.save({ boardId, userId });
+    const invite = await this.memberReporitory.save({ boardId, userId: InviteUserId });
     return invite;
-  }
-
-  async findMember(userId: number, boardId: number) {
-    const member = await this.memberReporitory.findOne({ where: { userId, boardId } });
-    return member;
   }
 }

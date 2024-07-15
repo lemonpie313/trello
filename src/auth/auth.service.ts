@@ -14,15 +14,21 @@ import { SignInDto } from './dto/sign-in.dto';
 import { JwtService } from '@nestjs/jwt';
 import { BoardsService } from 'src/boards/boards.service';
 import { ListsService } from 'src/lists/lists.service';
+import { Members } from 'src/boards/entities/member.entity';
+import { Board } from 'src/boards/entities/board.entity';
+import { Lists } from 'src/lists/entities/list.entity';
+import { Cards } from 'src/cards/entities/cards.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(Members) private readonly memberRepository: Repository<Members>,
+    @InjectRepository(Board) private readonly boardsRepository: Repository<Board>,
+    @InjectRepository(Lists) private readonly listsRepository: Repository<Lists>,
+    @InjectRepository(Cards) private readonly cardsRepository: Repository<Cards>,
     private readonly configService: ConfigService,
-    private readonly jwtService: JwtService,
-    private readonly boardsService: BoardsService,
-    private readonly listsService: ListsService
+    private readonly jwtService: JwtService
   ) {}
 
   async signUp({ email, password, passwordConfirm, bio }: SignUpDto) {
@@ -56,14 +62,16 @@ export class AuthService {
     return user;
   }
 
+  // 멤버 확인
   async validateMember(boardId: number, userId: number) {
-    const member = await this.boardsService.findMember(userId, boardId);
+    const member = await this.findMember(userId, boardId);
     if (!member) {
       throw new UnauthorizedException('접근 권한이 없습니다.');
     }
     return member;
   }
 
+  // 멤버 + 오너인지 확인
   async validateOwner(boardId: number, userId: number) {
     const member = await this.validateMember(boardId, userId);
     if (member.role !== 'owner') {
@@ -72,11 +80,41 @@ export class AuthService {
     return member;
   }
 
-  async validateListMember(listId: number, userId: number) {
-    const list = await this.listsService.findOne(listId);
+  // 리스트 확인 => 보드 ID 반환
+  async validateListToMember(listId: number, userId: number) {
+    const list = await this.findOneByList(listId);
     if (!list) {
       throw new UnauthorizedException('존재하지 않는 리스트입니다.');
     }
     return this.validateMember(list.boardId, userId);
+  }
+
+  // 카드 아이디
+  async validateCardToMember(cardId: number, userId: number) {
+    const card = await this.findOneByCard(cardId);
+    if (!card) {
+      throw new UnauthorizedException('존재하지 않는 리스트입니다.');
+    }
+    return this.validateMember(card.lists.boardId, userId);
+  }
+
+  //보드 아이디 + 유저 아이디 => 멤버 확인
+  async findMember(userId: number, boardId: number) {
+    const member = await this.memberRepository.findOne({ where: { userId, boardId } });
+    return member;
+  }
+
+  // 리스트 아이디 => 보드 아이디
+  async findOneByList(listId: number) {
+    const list = await this.listsRepository.findOne({ where: { listId }, relations: ['boards'] });
+    return list;
+  }
+
+  async findOneByCard(cardId: number) {
+    const card = await this.cardsRepository.findOne({
+      where: { cardId },
+      relations: ['lists', 'lists.boards'],
+    });
+    return card;
   }
 }

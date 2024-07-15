@@ -9,13 +9,13 @@ import { LocalStrategy } from './stategies/local.strategy';
 import { JwtStrategy } from './stategies/jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { Board } from 'src/boards/entities/board.entity';
-import { BoardsModule } from 'src/boards/boards.module';
-import { ListsModule } from 'src/lists/lists.module';
 import { Lists } from 'src/lists/entities/list.entity';
+import { Members } from 'src/boards/entities/member.entity';
+import { Cards } from 'src/cards/entities/cards.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Board, Lists]),
+    TypeOrmModule.forFeature([User, Board, Lists, Members, Cards]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -24,10 +24,9 @@ import { Lists } from 'src/lists/entities/list.entity';
         signOptions: { expiresIn: '12h' },
       }),
     }),
-    BoardsModule,
-    ListsModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}

@@ -55,7 +55,6 @@ export class BoardsController {
   @ApiQuery({ name: 'title', required: false })
   async findAll(@Request() req, @Query('title') title?: string) {
     const userId = req.user.id;
-    console.log(req.user);
     const data = await this.boardService.findAll(title, userId);
 
     return {
@@ -74,7 +73,7 @@ export class BoardsController {
   @Get(':id')
   async findOne(@Request() req, @Param('id') id: number) {
     const userId = req.user.id;
-    const data = await this.boardService.findOne(id);
+    const data = await this.boardService.findOneBoard(id, userId);
     return {
       statusCode: HttpStatus.OK,
       message: '보드 상세 조회에 성공했습니다.',
@@ -90,8 +89,9 @@ export class BoardsController {
    */
   @ApiParam({ name: 'id', description: '보드 ID' })
   @Patch(':id')
-  async update(@Param('id') id: number, @Body() updateBoardDto: UpdateBoardDto) {
-    const data = await this.boardService.update(updateBoardDto, id);
+  async update(@Request() req, @Param('id') id: number, @Body() updateBoardDto: UpdateBoardDto) {
+    const userId = req.user.id;
+    const data = await this.boardService.update(updateBoardDto, id, userId);
     return {
       statusCode: HttpStatus.OK,
       message: '보드 수정에 성공했습니다.',
@@ -106,12 +106,13 @@ export class BoardsController {
    */
   @ApiParam({ name: 'id', description: '보드 ID' })
   @Delete(':id')
-  async delete(@Param('id') id: number) {
-    const data = await this.boardService.delete(id);
+  async delete(@Request() req, @Param('id') id: number) {
+    const userId = req.user.id;
+    const data = await this.boardService.delete(id, userId);
     return {
       statusCode: HttpStatus.OK,
       message: '보드 삭제에 성공했습니다.',
-      data,
+      boardId: data,
     };
   }
 
@@ -125,15 +126,19 @@ export class BoardsController {
     schema: {
       type: 'object',
       properties: {
-        userId: { type: 'number', example: 1, description: '사용자 ID' },
+        InviteUserId: { type: 'number', example: 1, description: '사용자 ID' },
       },
     },
     description: '사용자 ID',
   })
   @Post(':boardId/members')
-  async invite(@Param('boardId') boardId: number, @Body('userId') userId: number) {
-    const data = await this.boardService.invite(boardId, userId);
-
+  async invite(
+    @Request() req,
+    @Param('boardId') boardId: number,
+    @Body('InviteUserId') InviteUserId: number
+  ) {
+    const userId = req.user.id;
+    const data = await this.boardService.invite(boardId, InviteUserId, userId);
     return {
       statusCode: HttpStatus.OK,
       message: '멤버 초대에 성공했습니다.',
@@ -141,3 +146,8 @@ export class BoardsController {
     };
   }
 }
+
+// async findMember(userId: number, boardId: number) {
+//   const member = await this.memberReporitory.findOne({ where: { userId, boardId } });
+//   return member;
+// }

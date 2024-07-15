@@ -36,7 +36,7 @@ export class AuthController {
   @Post('/sign-in')
   async signIn(@Request() req, @Body() SignInDto: SignInDto) {
     const userId = req.user.userId;
-    console.log(req.user);
+
     const data = await this.authService.signIn(userId);
 
     return {
