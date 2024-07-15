@@ -69,8 +69,8 @@ export class Cards {
   lists: Lists;
 
   @OneToMany(() => Workers, (workers) => workers.cards, { cascade: true })
-  workers: Workers;
+  workers: Workers[];
 
   @OneToMany(() => Checklists, (checklists) => checklists.cards)
-  checklists: Checklists;
+  checklists: Checklists[];
 }

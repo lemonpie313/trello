@@ -95,7 +95,7 @@ export class ChecklistsController {
    * @returns
    */
   @UseGuards(AuthGuard('jwt'))
-  @ApiParam({ name: 'checklistId', description: '체크리스트 ID' , required: true })
+  @ApiParam({ name: 'checklistId', description: '체크리스트 ID', required: true })
   @Delete('/:checklistId')
   async deleteChecklist(@Param('checklistId') checklistId: number, @Request() req) {
     const userId = req.user.id;

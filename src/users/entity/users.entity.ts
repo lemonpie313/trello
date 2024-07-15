@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString, IsStrongPassword } from 'class-validator';
 import { Members } from 'src/boards/entities/member.entity';
+import { Workers } from 'src/cards/entities/workers.entity';
 import {
   Column,
   CreateDateColumn,
@@ -65,4 +66,7 @@ export class User {
 
   @OneToMany(() => Members, (member) => member.user)
   members: Members[];
+
+  // @OneToMany(() => Workers, (workers) => workers.user)
+  // workers: Workers[];
 }

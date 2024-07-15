@@ -34,7 +34,11 @@ export class CardsController {
   @UseGuards(AuthGuard('jwt'))
   @ApiQuery({ name: 'listId', description: '리스트 ID', required: false })
   @Post('/')
-  async createCard(@Body() createCardDto: CreateCardDto, @Query('listId') listId: number, @Request() req) {
+  async createCard(
+    @Body() createCardDto: CreateCardDto,
+    @Query('listId') listId: number,
+    @Request() req
+  ) {
     const userId = req.user.id;
     const card = await this.cardsService.createCard(userId, listId, createCardDto); // listId, userId 추가할것
     return {

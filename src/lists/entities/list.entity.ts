@@ -44,5 +44,5 @@ export class Lists {
   // board: Board;
 
   @OneToMany(() => Cards, (cards) => cards.lists, { cascade: true })
-  cards: Cards;
+  cards: Cards[];
 }

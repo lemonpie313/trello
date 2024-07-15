@@ -10,12 +10,14 @@ import { CreateWorkerDto } from './dtos/create-worker.dto';
 import { Workers } from './entities/workers.entity';
 import { LexoRank } from 'lexorank';
 import { UpdateOrderDto } from './dtos/update-order.dto';
+import { Members } from 'src/boards/entities/member.entity';
 
 @Injectable()
 export class CardsService {
   constructor(
     @InjectRepository(Cards) private readonly cardsRepository: Repository<Cards>,
-    @InjectRepository(Workers) private readonly workersRepository: Repository<Workers>
+    @InjectRepository(Workers) private readonly workersRepository: Repository<Workers>,
+    @InjectRepository(Members) private readonly membersRepository: Repository<Members>
   ) {}
 
   async createCard(userId: number, listId: number, createCardDto: CreateCardDto) {
@@ -95,6 +97,9 @@ export class CardsService {
         createdAt: true,
         updatedAt: true,
       },
+      relations: {
+        workers: true,
+      },
     });
     if (_.isNil(card)) {
       throw new NotFoundException({
@@ -102,7 +107,39 @@ export class CardsService {
         message: '해당 카드가 존재하지 않습니다.',
       });
     }
-    return card;
+    let workers = [];
+    for (let worker of card.workers) {
+      const workMember = await this.membersRepository.findOne({
+        where: {
+          workers: {
+            workerId: worker.workerId,
+          },
+          // board: {
+          //   boardId,
+          // } // 인증 함수에서 가져와질듯
+        },
+        relations: {
+          user: true,
+        },
+      });
+      workers.push({
+        userId: workMember.user.userId,
+        memberId: workMember.memberId,
+        email: workMember.user.email,
+        profileImg: workMember.user.profileImg,
+      });
+    }
+    return {
+      cardId,
+      title: card.title,
+      description: card.description,
+      color: card.color,
+      startAt: card.startAt,
+      deadline: card.deadline,
+      createdAt: card.createdAt,
+      updatedAt: card.updatedAt,
+      workers,
+    };
   }
 
   async updateCard(userId: number, cardId: number, updateCardDto: UpdateCardDto) {
@@ -228,6 +265,7 @@ export class CardsService {
     return updatedCard;
   }
 
+  /* 미완성 */
   async createWorkers(userId: number, cardId: number, createWorkerDto: CreateWorkerDto) {
     // 인증(?)함수
 
@@ -245,14 +283,97 @@ export class CardsService {
     // workers 가 members에 해당되는지 봐야됨
     const { workers } = createWorkerDto;
     for (const memberId of workers) {
+      // 이미 추가돼있는지 확인
+      const existsMember = await this.workersRepository.findOne({
+        where: {
+          members: {
+            memberId,
+          },
+          cards: {
+            cardId,
+          },
+        },
+      });
+      if (existsMember) {
+        continue;
+      }
+
+      // 그사람이 멤버가 맞는지 확인
+      const member = await this.membersRepository.findOne({
+        where: {
+          memberId,
+          // board: {
+          //   boardId,
+          // } // 얘는 인증 함수에서 어떻게든 넘어올거같음
+        },
+        relations: {
+          user: true,
+        },
+      });
+      if (_.isNil(member)) {
+        throw new NotFoundException({
+          status: 404,
+          message: '해당 멤버가 존재하지 않습니다.',
+        });
+      }
+
+      //저장
       await this.workersRepository.save({
-        card: {
+        cards: {
           cardId,
         },
-        memberId,
+        members: {
+          memberId,
+        },
       });
     }
+
+    const updatedCard = await this.cardsRepository.findOne({
+      where: {
+        cardId,
+      },
+      relations: {
+        workers: true,
+      },
+    });
+
+    // 업로드한것 조회
+    let createdWorkers = [];
+    for (let worker of card.workers) {
+      const workMember = await this.membersRepository.findOne({
+        where: {
+          workers: {
+            workerId: worker.workerId,
+          },
+          // board: {
+          //   boardId,
+          // } // 인증 함수에서 가져와질듯
+        },
+        relations: {
+          user: true,
+        },
+      });
+      createdWorkers.push({
+        userId: workMember.user.userId,
+        memberId: workMember.memberId,
+        email: workMember.user.email,
+        profileImg: workMember.user.profileImg,
+      });
+    }
+    return {
+      cardId,
+      title: card.title,
+      description: card.description,
+      color: card.color,
+      startAt: card.startAt,
+      deadline: card.deadline,
+      createdAt: card.createdAt,
+      updatedAt: card.updatedAt,
+      workers,
+    };
   }
+
+  /*worker 삭제 기능 추가해야함..!!!! */
 
   async updateOrder(userId: number, cardId: number, updateOrderDto: UpdateOrderDto) {
     // 인증(?)함수
@@ -263,9 +384,9 @@ export class CardsService {
       where: {
         cardId,
       },
-      relations: {
-        lists: true,
-      },
+      // relations: {
+      //   lists: true,
+      // },
     });
     if (_.isNil(card)) {
       throw new NotFoundException({
@@ -276,9 +397,9 @@ export class CardsService {
 
     const cards = await this.cardsRepository.find({
       where: {
-        lists: {
-          listId: card.lists.listId,
-        },
+        // lists: {
+        //   listId: card.lists.listId,
+        // },
       },
       order: {
         lexoRank: 'asc',
@@ -305,9 +426,9 @@ export class CardsService {
     );
     const updatedCards = await this.cardsRepository.find({
       where: {
-        lists: {
-          listId: card.lists.listId,
-        },
+        // lists: {
+        //   listId: card.lists.listId,
+        // },
       },
       select: {
         cardId: true,

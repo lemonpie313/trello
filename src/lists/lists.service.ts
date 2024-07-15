@@ -10,7 +10,7 @@ import { LexoRank } from 'lexorank';
 @Injectable()
 export class ListsService {
   constructor(
-    @InjectRepository(Lists) private readonly listsRepository: Repository<Lists>,
+    @InjectRepository(Lists) private readonly listsRepository: Repository<Lists>
     //@InjectRepository(Board) private readonly boardRepository: Repository<Board>
   ) {}
 
