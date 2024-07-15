@@ -45,9 +45,9 @@ export class ListsService {
     //     .toString();
     // }
 
-    const data = this.listsRepository.save({boardId, title})
+    const data = this.listsRepository.save({ boardId, title });
 
-    return data
+    return data;
   }
 
   async findAllList() {

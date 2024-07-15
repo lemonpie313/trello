@@ -12,9 +12,8 @@ import {
 
 @Entity()
 export class User {
-
-  @PrimaryGeneratedColumn({unsigned:true})
-  userId:number
+  @PrimaryGeneratedColumn({ unsigned: true })
+  userId: number;
 
   /**
    * 이메일
@@ -63,7 +62,7 @@ export class User {
 
   @UpdateDateColumn()
   updateAt: Date;
-  
+
   @OneToMany(() => Members, (member) => member.user)
   members: Members[];
 }

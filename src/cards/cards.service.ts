@@ -19,7 +19,6 @@ export class CardsService {
   ) {}
 
   async createCard(userId: number, listId: number, createCardDto: CreateCardDto) {
-
     const { title, description, color, startDate, startTime } = createCardDto;
     let startAt: Date;
     if (startDate && startTime) {
@@ -63,7 +62,7 @@ export class CardsService {
       where: {
         lists: {
           listId,
-        }
+        },
       },
       select: {
         cardId: true,
@@ -266,7 +265,7 @@ export class CardsService {
       },
       relations: {
         lists: true,
-      }
+      },
     });
     if (_.isNil(card)) {
       throw new NotFoundException({
@@ -279,7 +278,7 @@ export class CardsService {
       where: {
         lists: {
           listId: card.lists.listId,
-        }
+        },
       },
       order: {
         lexoRank: 'asc',
@@ -307,8 +306,8 @@ export class CardsService {
     const updatedCards = await this.cardsRepository.find({
       where: {
         lists: {
-          listId:card.lists.listId,
-        }
+          listId: card.lists.listId,
+        },
       },
       select: {
         cardId: true,

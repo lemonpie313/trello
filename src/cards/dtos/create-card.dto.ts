@@ -16,7 +16,9 @@ export class CreateCardDto extends PickType(Cards, ['title', 'description', 'col
    * @example "12:00"
    */
   @IsOptional()
-  @Matches(/^([01][0-9]|2[0-3]):([0-5][0-9])$/, { message: '시작 시간을 양식에 맞게 입력해주세요.' })
+  @Matches(/^([01][0-9]|2[0-3]):([0-5][0-9])$/, {
+    message: '시작 시간을 양식에 맞게 입력해주세요.',
+  })
   @IsString()
   startTime: string;
 }

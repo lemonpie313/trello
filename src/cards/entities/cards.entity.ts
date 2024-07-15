@@ -52,7 +52,7 @@ export class Cards {
   @Column({ type: 'varchar', nullable: true })
   deadline: Date;
 
-  @Column({type: 'varchar', nullable: false})
+  @Column({ type: 'varchar', nullable: false })
   lexoRank: string;
 
   @CreateDateColumn()
@@ -66,7 +66,6 @@ export class Cards {
 
   @ManyToOne(() => Lists, (lists) => lists.cards, { onDelete: 'CASCADE' })
   lists: Lists;
-
 
   @OneToMany(() => Workers, (workers) => workers.cards, { cascade: true })
   workers: Workers;
