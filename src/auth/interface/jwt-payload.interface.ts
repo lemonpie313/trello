@@ -1,3 +1,3 @@
 export class JwtPayload {
-  id:number
+  id: number;
 }

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString, IsStrongPassword } from 'class-validator';
-import { Board } from 'src/boards/entities/board.entity';
-import { Member } from 'src/boards/entities/member.entity';
+import { Members } from 'src/boards/entities/member.entity';
+import { Workers } from 'src/cards/entities/workers.entity';
 import {
   Column,
   CreateDateColumn,
@@ -13,9 +13,8 @@ import {
 
 @Entity()
 export class User {
-
-  @PrimaryGeneratedColumn({unsigned:true})
-  userId:number
+  @PrimaryGeneratedColumn({ unsigned: true })
+  userId: number;
 
   /**
    * 이메일
@@ -65,6 +64,9 @@ export class User {
   @UpdateDateColumn()
   updateAt: Date;
 
-  @OneToMany(() => Member, (member) => member.user)
-  members: Member[];
+  @OneToMany(() => Members, (member) => member.user)
+  members: Members[];
+
+  // @OneToMany(() => Workers, (workers) => workers.user)
+  // workers: Workers[];
 }
