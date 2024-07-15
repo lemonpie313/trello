@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { CreateCardDto } from './dtos/create-card.dto';
 import { CardsService } from './cards.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { GetCardsByListIdDto } from './dtos/get-cards-by-list-id.dto';
 import { UpdateCardDto } from './dtos/update-card.dto';
 import { CreateCardDeadlineDto } from './dtos/create-card-deadline.dto';
@@ -33,12 +33,11 @@ export class CardsController {
    * @returns
    */
   @UseGuards(AuthGuard('jwt'))
+  @ApiQuery({ name: 'listId', required: false })
   @Post('/') // 인증으로 userId 받아서 멤버인지 검증 필요
-  async createCard(@Body() createCardDto: CreateCardDto, @Request() req) {
+  async createCard(@Body() createCardDto: CreateCardDto, @Query() listId: number, @Request() req) {
     const userId = req.user.id;
-    // listId 쿼리 추가
-    // param에 listId, req.user에 user 추가할것
-    const card = await this.cardsService.createCard(userId, createCardDto); // listId, userId 추가할것
+    const card = await this.cardsService.createCard(userId, listId, createCardDto); // listId, userId 추가할것
     return {
       status: HttpStatus.CREATED,
       message: '카드 생성이 완료되었습니다.',
@@ -51,6 +50,7 @@ export class CardsController {
    * @returns
    */
   @UseGuards(AuthGuard('jwt'))
+  @ApiQuery({ name: 'listId', required: false })
   @Get('/') // 인증으로 userId 받아서 멤버인지 검증 필요
   async readAllCards(@Query() getCardsByListDto: GetCardsByListIdDto, @Request() req) {
     const userId = req.user.id;
@@ -67,6 +67,7 @@ export class CardsController {
    * @returns
    */
   @UseGuards(AuthGuard('jwt'))
+  @ApiParam({ name: 'cardId', description: '카드 ID' })
   @Get('/:cardId') // 인증으로 userId 받아서 멤버인지 검증 필요
   async readCard(@Param('cardId') cardId: number, @Request() req) {
     const userId = req.user.id;

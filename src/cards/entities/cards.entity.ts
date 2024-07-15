@@ -10,6 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Workers } from './workers.entity';
+import { Lists } from 'src/lists/entities/list.entity';
 
 @Entity('cards')
 export class Cards {
@@ -63,10 +64,10 @@ export class Cards {
   @DeleteDateColumn()
   deletedAt: Date;
 
-  // ManyToOne(() => Lists, (lists) => lists.cards, { onDelete: 'CASCADE' })
-  // lists: Lists;
+  @ManyToOne(() => Lists, (lists) => lists.cards, { onDelete: 'CASCADE' })
+  lists: Lists;
 
 
-  @OneToMany(() => Workers, (workers) => workers.cards)
+  @OneToMany(() => Workers, (workers) => workers.cards, { cascade: true })
   workers: Workers;
 }

@@ -39,6 +39,6 @@ export class Members {
   @ManyToOne((type) => Board, (board) => board.members, { onDelete: 'CASCADE' })
   board: Board;
 
-  @OneToMany(() => Workers, (workers) => workers.members)
+  @OneToMany(() => Workers, (workers) => workers.members, { cascade: true })
   workers: Workers;
 }

@@ -18,8 +18,7 @@ export class CardsService {
     @InjectRepository(Workers) private readonly workersRepository: Repository<Workers>
   ) {}
 
-  async createCard(userId: number, createCardDto: CreateCardDto) {
-    // 인증(?)함수
+  async createCard(userId: number, listId: number, createCardDto: CreateCardDto) {
 
     const { title, description, color, startDate, startTime } = createCardDto;
     let startAt: Date;
@@ -30,9 +29,11 @@ export class CardsService {
     }
 
     const previousCards = await this.cardsRepository.find({
-      // where: {
-      //   listId,
-      // },
+      where: {
+        lists: {
+          listId,
+        },
+      },
     });
     let lexoRank: string;
     if (previousCards.length == 0) {
@@ -60,9 +61,9 @@ export class CardsService {
 
     const cards = await this.cardsRepository.find({
       where: {
-        // list: {
-        //   listId,
-        // }
+        lists: {
+          listId,
+        }
       },
       select: {
         cardId: true,
@@ -258,10 +259,28 @@ export class CardsService {
     // 인증(?)함수
 
     const { rank } = updateOrderDto;
+
+    const card = await this.cardsRepository.findOne({
+      where: {
+        cardId,
+      },
+      relations: {
+        lists: true,
+      }
+    });
+    if (_.isNil(card)) {
+      throw new NotFoundException({
+        status: 404,
+        message: '해당 카드가 존재하지 않습니다.',
+      });
+    }
+
     const cards = await this.cardsRepository.find({
-      // where: {
-      //   cardId,
-      // },
+      where: {
+        lists: {
+          listId: card.lists.listId,
+        }
+      },
       order: {
         lexoRank: 'asc',
       },
@@ -287,9 +306,9 @@ export class CardsService {
     );
     const updatedCards = await this.cardsRepository.find({
       where: {
-        // list: {
-        //   listId,
-        // }
+        lists: {
+          listId:card.lists.listId,
+        }
       },
       select: {
         cardId: true,
