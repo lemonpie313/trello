@@ -1,8 +1,10 @@
 import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
+import { Cards } from 'src/cards/entities/cards.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -27,4 +29,7 @@ export class Checklists {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToOne(() => Cards, (card) => card.checklists)
+  card: Cards;
 }

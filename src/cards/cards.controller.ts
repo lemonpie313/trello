@@ -26,14 +26,14 @@ import { AuthGuard } from '@nestjs/passport';
 @UseGuards(AuthGuard('jwt'))
 @Controller('cards')
 export class CardsController {
-  constructor(private cardsService: CardsService) {}
+  constructor(private readonly cardsService: CardsService) {}
 
   /**
    * 카드 생성
    * @returns
    */
   @UseGuards(AuthGuard('jwt'))
-  @ApiQuery({ name: 'listId', required: false })
+  @ApiQuery({ name: 'listId', required: true })
   @Post('/') // 인증으로 userId 받아서 멤버인지 검증 필요
   async createCard(@Body() createCardDto: CreateCardDto, @Query() listId: number, @Request() req) {
     const userId = req.user.id;

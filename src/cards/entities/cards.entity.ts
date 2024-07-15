@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { Workers } from './workers.entity';
 import { Lists } from 'src/lists/entities/list.entity';
+import { Checklists } from 'src/checklists/entities/checklists.entity';
 
 @Entity('cards')
 export class Cards {
@@ -69,4 +70,7 @@ export class Cards {
 
   @OneToMany(() => Workers, (workers) => workers.cards, { cascade: true })
   workers: Workers;
+
+  @OneToMany(() => Checklists, (checklists) => checklists.card)
+  checklists: Checklists;
 }
