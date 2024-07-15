@@ -12,6 +12,6 @@ export class AppController {
   @Get('/health-check')
   getHello(): string {
     const port = this.configService.get<number>('PORT');
-    return `Hello world!! ${port}`
+    return `Hello world!! ${port}`;
   }
 }

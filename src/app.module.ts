@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { BoardsModule } from './boards/boards.module';
 import { ListsModule } from './lists/lists.module';
 import { CardsModule } from './cards/cards.module';
+import { ChecklistsModule } from './checklists/checklists.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { CardsModule } from './cards/cards.module';
     BoardsModule,
     ListsModule,
     CardsModule,
+    ChecklistsModule,
   ],
   controllers: [AppController],
   providers: [],

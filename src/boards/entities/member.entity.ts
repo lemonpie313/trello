@@ -4,6 +4,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -12,9 +13,10 @@ import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { BOARD_ROLE } from '../types/board-roles.type';
 import { User } from 'src/users/entity/users.entity';
 import { Board } from './board.entity';
+import { Workers } from 'src/cards/entities/workers.entity';
 
 @Entity('members')
-export class Member {
+export class Members {
   @PrimaryGeneratedColumn({ unsigned: true })
   memberId: number;
 
@@ -38,4 +40,7 @@ export class Member {
   @ManyToOne((type) => Board, (board) => board.members, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'board_id' })
   board: Board;
+
+  @OneToMany(() => Workers, (workers) => workers.members, { cascade: true })
+  workers: Workers;
 }

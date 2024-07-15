@@ -4,19 +4,19 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Workers } from './workers.entity';
+import { Lists } from 'src/lists/entities/list.entity';
+import { Checklists } from 'src/checklists/entities/checklists.entity';
 
 @Entity('cards')
 export class Cards {
   @PrimaryGeneratedColumn()
   cardId: number;
-
-  @IsNotEmpty()
-  @IsString()
-  @Column()
-  member: string;
 
   /**
    * 제목
@@ -24,7 +24,7 @@ export class Cards {
    */
   @IsNotEmpty({ message: '제목을 입력해주세요.' })
   @IsString()
-  @Column()
+  @Column({ type: 'varchar', nullable: false })
   title: string;
 
   /**
@@ -33,27 +33,28 @@ export class Cards {
    */
   @IsNotEmpty({ message: '상세 설명을 입력해주세요.' })
   @IsString()
-  @Column()
+  @Column({ type: 'varchar', nullable: false })
   description: string;
 
   /**
    * 카드 색상
    * @example "ffffff"
    */
-  @IsNotEmpty({ message: '카드 색상을 입력해주세요.'})
+  @IsNotEmpty({ message: '카드 색상을 입력해주세요.' })
   @IsHexColor()
-  @Column()
+  @Column({ type: 'varchar', nullable: false })
   color: string;
 
-  @IsNotEmpty()
   @IsDate()
-  @Column()
+  @Column({ type: 'varchar', nullable: false })
   startAt: Date;
 
-  @IsNotEmpty()
   @IsDate()
-  @Column()
+  @Column({ type: 'varchar', nullable: true })
   deadline: Date;
+
+  @Column({ type: 'varchar', nullable: false })
+  lexoRank: string;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -63,4 +64,13 @@ export class Cards {
 
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @ManyToOne(() => Lists, (lists) => lists.cards, { onDelete: 'CASCADE' })
+  lists: Lists;
+
+  @OneToMany(() => Workers, (workers) => workers.cards, { cascade: true })
+  workers: Workers[];
+
+  @OneToMany(() => Checklists, (checklists) => checklists.cards)
+  checklists: Checklists[];
 }

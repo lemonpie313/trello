@@ -23,7 +23,7 @@ async function bootstrap() {
     .setTitle('trello')
     .setDescription('API description of trello project')
     .setVersion('1.0')
-    .addBearerAuth({type:'http', scheme:'bearer', bearerFormat:'JWT'})
+    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document, {
