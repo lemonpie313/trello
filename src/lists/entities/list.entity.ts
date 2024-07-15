@@ -7,27 +7,27 @@ import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGenerate
 @Entity()
 export class Lists {
   @PrimaryGeneratedColumn()
-  listId:number
+  listId: number;
+
+  /**
+   * 제목
+   * @example '해야할일'
+   */
+  @Column()
+  @IsString()
+  @IsNotEmpty()
+  title: string;
 
   @Column()
   @IsNumber()
   @IsNotEmpty()
-  boardId:number
-
-  /**
-  * 제목
-  * @example '해야할일'
-  */
-  @Column()
-  @IsString()
-  @IsNotEmpty()
-  title:string
+  boardId: number;
 
   @Column({type:'varchar'})
-  order:LexoRank
+  order:string
 
   @CreateDateColumn()
-  createdAt:Date
+  createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt:Date

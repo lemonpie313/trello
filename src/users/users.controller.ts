@@ -8,11 +8,11 @@ import { usersUpdateDto } from './dto/user.update.dto';
 @ApiTags('USER API')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService:UsersService){}
+  constructor(private readonly usersService: UsersService) {}
 
   /**
    * 개인정보조회
-   * @param req 
+   * @param req
    * @returns
    */
   @ApiBearerAuth()
@@ -20,32 +20,30 @@ export class UsersController {
   @Get('/me')
   async findMe(@Request() req) {
     const userId = req.user.id;
-    console.log(userId)  
-    const data = await this.usersService.findMe(userId)
+    const data = await this.usersService.findMe(userId);
     return {
-        statusCode: HttpStatus.OK,
-        message: '정상적으로 조회가 완료되었습니다.',
-        data: {...data, password:undefined }
-      };
-    }
-
+      statusCode: HttpStatus.OK,
+      message: '정상적으로 조회가 완료되었습니다.',
+      data: { ...data, password: undefined },
+    };
+  }
 
   /**
    * 개인정보수정
-   * @param req 
+   * @param req
    * @param usersUpdateDto
    * @returns
    */
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @Patch('/me')
-  async updateMe(@Request() req,@Body() usersUpdateDto:usersUpdateDto) {
-    const userId = req.user.id;    
-    const data = await this.usersService.updateMe(userId, usersUpdateDto)
+  async updateMe(@Request() req, @Body() usersUpdateDto: usersUpdateDto) {
+    const userId = req.user.id;
+    const data = await this.usersService.updateMe(userId, usersUpdateDto);
     return {
-        statusCode: HttpStatus.OK,
-        message: '정상적으로 조회가 완료되었습니다.',
-        data: {...data, password:undefined }
-      };
-    }
+      statusCode: HttpStatus.OK,
+      message: '정상적으로 조회가 완료되었습니다.',
+      data: { ...data, password: undefined },
+    };
+  }
 }

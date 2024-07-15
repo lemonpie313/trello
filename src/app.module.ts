@@ -9,7 +9,7 @@ import { UsersModule } from './users/users.module';
 import { BoardsModule } from './boards/boards.module';
 import { ListsModule } from './lists/lists.module';
 import { CardsModule } from './cards/cards.module';
-import { LexoModule } from './lexorank/lexo.module';
+import { ChecklistsModule } from './checklists/checklists.module';
 
 @Module({
   imports: [
@@ -23,7 +23,7 @@ import { LexoModule } from './lexorank/lexo.module';
     BoardsModule,
     ListsModule,
     CardsModule,
-    LexoModule,
+    ChecklistsModule,
   ],
   controllers: [AppController],
   providers: [],

@@ -1,8 +1,17 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ListsService } from './lists.service';
 import { CreateListDto } from './dtos/create-list.dto';
 import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
-
 
 @ApiTags('LIST API')
 @Controller('lists')
@@ -11,7 +20,7 @@ export class ListsController {
     private readonly listsService:ListsService,
   ){}
 
-    /**
+  /**
    * 리스트 생성
    * @returns
    */
@@ -20,7 +29,7 @@ export class ListsController {
   async createlist(@Query('board_id') boardId:number, @Body() createListDto: CreateListDto){
     const data = await this.listsService.createlist(boardId,createListDto)
 
-    return   {
+    return {
       status: HttpStatus.CREATED,
       message: '리스트 생성이 완료되었습니다.',
       data,
@@ -43,7 +52,7 @@ export class ListsController {
       };
     }
 
-   /**
+  /**
    * 리스트 수정
    * @returns
    */

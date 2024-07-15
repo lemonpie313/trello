@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Lists } from './entities/list.entity';
 import { Repository } from 'typeorm';
@@ -7,25 +7,24 @@ import { LexoRank } from 'lexorank';
 
 @Injectable()
 export class ListsService {
-  constructor(@InjectRepository(Lists) private readonly listsRepository: Repository<Lists> ){}
+  constructor(
+    @InjectRepository(Lists) private readonly listsRepository: Repository<Lists>
+    //@InjectRepository(Board) private readonly boardRepository: Repository<Board>
+  ) {}
 
   async createlist(boardId:number, {title}:CreateListDto){
     const listAllFind = await this.listsRepository.find({
       where: { boardId }
   });
-
-  listAllFind.forEach(list => {
-    list.order = LexoRank.parse(list.order.toString());
-});
-
-    const order = LexoRank.middle();
     if (listAllFind.length > 0) {
-      const newLexo = listAllFind[listAllFind.length - 1].order.genNext();
+      const newLexo = LexoRank.parse(listAllFind[listAllFind.length - 1].order).genNext();
       const data = await this.listsRepository.save({title,boardId, order:newLexo.toString()})
       return data
+    } else {
+      const order = LexoRank.middle().toString()
+      const data = await this.listsRepository.save({title,boardId, order:order})
+      return data
     }
-    const data = await this.listsRepository.save({title,boardId, order:order.toString()})
-    return data
   }
 
   async findAllList(boardId:number){
@@ -35,7 +34,6 @@ export class ListsService {
       relations:['cards'],     
       select: {
         cards: {
-          member:true,
           title:true,
           description:true,
           startAt:true,
@@ -44,7 +42,7 @@ export class ListsService {
       }
     })
 
-    return data
+    return data;
   }
 
   async updateList(listId:number, {title}:CreateListDto){
@@ -66,27 +64,29 @@ export class ListsService {
         where: { boardId },
         order: { order: "ASC"}
     });
+    console.log(listAllFind)
 
-    listAllFind.forEach(list => {
-      list.order = LexoRank.parse(list.order.toString());
-  });
-
-    let newLexo: LexoRank;
+    let newLexo: string;
 
     const findIndex = listAllFind.findIndex(el=>el.listId===movedListId);
+    console.log(findIndex)
 
     if (findIndex === listAllFind.length-1 ) {
-        newLexo = listAllFind[findIndex].order.genNext();
+        newLexo = LexoRank.parse(listAllFind[findIndex].order).genNext().toString();
+        console.log(newLexo)
     } 
     else if (movedListId === -1) { 
-        newLexo = listAllFind[0].order.genPrev();
+        newLexo = LexoRank.parse(listAllFind[0].order).genPrev().toString();
+        console.log(newLexo)
     } 
     else {
-        newLexo = listAllFind[findIndex].order.between(listAllFind[findIndex + 1].order);
+        newLexo = LexoRank.parse(listAllFind[findIndex].order).between(LexoRank.parse(listAllFind[findIndex + 1].order)).toString();
+        console.log(newLexo)
     }
 
-    const data = await this.listsRepository.update({listId}, {order:newLexo.toString()})
+    const data = await this.listsRepository.update({listId}, {order:newLexo})
 
     return data;
   }
+
 }
