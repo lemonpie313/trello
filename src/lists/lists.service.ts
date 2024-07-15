@@ -64,24 +64,19 @@ export class ListsService {
         where: { boardId },
         order: { order: "ASC"}
     });
-    console.log(listAllFind)
 
     let newLexo: string;
 
     const findIndex = listAllFind.findIndex(el=>el.listId===movedListId);
-    console.log(findIndex)
 
     if (findIndex === listAllFind.length-1 ) {
         newLexo = LexoRank.parse(listAllFind[findIndex].order).genNext().toString();
-        console.log(newLexo)
     } 
     else if (movedListId === -1) { 
         newLexo = LexoRank.parse(listAllFind[0].order).genPrev().toString();
-        console.log(newLexo)
     } 
     else {
         newLexo = LexoRank.parse(listAllFind[findIndex].order).between(LexoRank.parse(listAllFind[findIndex + 1].order)).toString();
-        console.log(newLexo)
     }
 
     const data = await this.listsRepository.update({listId}, {order:newLexo})
