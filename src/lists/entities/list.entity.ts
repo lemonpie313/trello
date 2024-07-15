@@ -1,5 +1,7 @@
 import { IsNotEmpty, IsNumber, IsString } from "class-validator";
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { LexoRank } from "lexorank";
+import { Cards } from "src/cards/entities/cards.entity";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 
 @Entity()
@@ -21,13 +23,15 @@ export class Lists {
   @IsNotEmpty()
   title:string
 
-  @Column()
-  @IsNumber()
-  order:number
+  @Column({type:'varchar'})
+  order:LexoRank
 
   @CreateDateColumn()
   createdAt:Date
 
   @UpdateDateColumn()
   updatedAt:Date
+
+  @OneToMany((type)=>Cards, cards=>cards.lists)
+  cards:Cards[]
 }

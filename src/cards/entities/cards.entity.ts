@@ -1,9 +1,11 @@
 import { IsDate, IsHexColor, IsNotEmpty, IsString } from 'class-validator';
+import { Lists } from 'src/lists/entities/list.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -63,4 +65,7 @@ export class Cards {
 
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @ManyToOne((type)=>Lists, Lists=>Lists.cards, {onDelete:'CASCADE'})
+  lists:Lists
 }

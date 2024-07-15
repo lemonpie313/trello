@@ -40,6 +40,7 @@ export class AuthService {
 
   async validateUser({email, password} : SignInDto){
     const user = await this.userRepository.findOneBy({email})
+    console.log(user)
     if(!user) throw new NotFoundException ('존재하지 않는 유저입니다.')
 
     const comparedPassword = bcrypt.compareSync(password, user.password);
