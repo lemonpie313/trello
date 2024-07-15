@@ -5,15 +5,16 @@ import { Like, Repository } from 'typeorm';
 import { CreateBoardDto } from './dtos/create-board.dto';
 import { UpdateBoardDto } from './dtos/update-board.dto';
 import { BOARD_ROLE } from './types/board-roles.type';
-import { Member } from './entities/member.entity';
 import { NotificationsGateway } from 'src/notifications/notifications.gateway';
+import { Members } from './entities/member.entity';
 
 @Injectable()
 export class BoardsService {
   constructor(
     @InjectRepository(Board) private readonly boardReporitory: Repository<Board>,
-    @InjectRepository(Member) private readonly memberReporitory: Repository<Member>,
+    @InjectRepository(Members) private readonly memberReporitory: Repository<Members>,
     private readonly notificationsGateway: NotificationsGateway
+
   ) {}
 
   async create(createBoardDto: CreateBoardDto, userId: number) {

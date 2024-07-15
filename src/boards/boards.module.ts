@@ -3,13 +3,14 @@ import { BoardsController } from './boards.controller';
 import { BoardsService } from './boards.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Board } from './entities/board.entity';
-import { Member } from './entities/member.entity';
+import { Members } from './entities/member.entity';
 import { NotificationsModule } from 'src/notifications/notifications.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Board, Member]),
+    TypeOrmModule.forFeature([Board, Members]),
     NotificationsModule],
+
   controllers: [BoardsController],
   providers: [BoardsService],
 })

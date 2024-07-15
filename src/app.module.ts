@@ -11,6 +11,7 @@ import { ListsModule } from './lists/lists.module';
 import { CardsModule } from './cards/cards.module';
 import { NotificationsGateway } from './notifications/notifications.gateway';
 import { NotificationsModule } from './notifications/notifications.module';
+import { ChecklistsModule } from './checklists/checklists.module';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { NotificationsModule } from './notifications/notifications.module';
     BoardsModule,
     ListsModule,
     CardsModule,
-    NotificationsModule
+    NotificationsModule,
+    ChecklistsModule,
   ],
   controllers: [AppController],
   providers: [NotificationsGateway],
