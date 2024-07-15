@@ -11,7 +11,7 @@ import { LexoRank } from 'lexorank';
 export class ListsService {
   constructor(
     @InjectRepository(Lists) private readonly listsRepository: Repository<Lists>,
-    @InjectRepository(Board) private readonly boardRepository: Repository<Board>
+    //@InjectRepository(Board) private readonly boardRepository: Repository<Board>
   ) {}
 
   async createlist(boardId: number, { title }: CreateListDto) {

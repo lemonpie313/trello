@@ -14,6 +14,10 @@ export class Checklists {
   @PrimaryGeneratedColumn({ unsigned: true })
   checklistId: number;
 
+  /**
+   * 체크리스트 내용
+   * @example "To-do"
+   */
   @IsString()
   @IsNotEmpty({ message: '체크리스트 내용을 입력해주세요.' })
   @Column()
@@ -30,6 +34,6 @@ export class Checklists {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Cards, (card) => card.checklists)
-  card: Cards;
+  @ManyToOne(() => Cards, (cards) => cards.checklists, { onDelete: 'CASCADE' })
+  cards: Cards;
 }

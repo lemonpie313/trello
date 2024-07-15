@@ -14,7 +14,6 @@ import {
 import { CreateCardDto } from './dtos/create-card.dto';
 import { CardsService } from './cards.service';
 import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { GetCardsByListIdDto } from './dtos/get-cards-by-list-id.dto';
 import { UpdateCardDto } from './dtos/update-card.dto';
 import { CreateCardDeadlineDto } from './dtos/create-card-deadline.dto';
 import { CreateWorkerDto } from './dtos/create-worker.dto';
@@ -33,9 +32,9 @@ export class CardsController {
    * @returns
    */
   @UseGuards(AuthGuard('jwt'))
-  @ApiQuery({ name: 'listId', required: true })
-  @Post('/') // 인증으로 userId 받아서 멤버인지 검증 필요
-  async createCard(@Body() createCardDto: CreateCardDto, @Query() listId: number, @Request() req) {
+  @ApiQuery({ name: 'listId', description: '리스트 ID', required: false })
+  @Post('/')
+  async createCard(@Body() createCardDto: CreateCardDto, @Query('listId') listId: number, @Request() req) {
     const userId = req.user.id;
     const card = await this.cardsService.createCard(userId, listId, createCardDto); // listId, userId 추가할것
     return {
@@ -50,11 +49,10 @@ export class CardsController {
    * @returns
    */
   @UseGuards(AuthGuard('jwt'))
-  @ApiQuery({ name: 'listId', required: false })
-  @Get('/') // 인증으로 userId 받아서 멤버인지 검증 필요
-  async readAllCards(@Query() getCardsByListDto: GetCardsByListIdDto, @Request() req) {
+  @ApiQuery({ name: 'listId', description: '리스트 ID', required: false })
+  @Get('/')
+  async readAllCards(@Query('listId') listId: number, @Request() req) {
     const userId = req.user.id;
-    const { listId } = getCardsByListDto;
     const cards = await this.cardsService.readAllCards(userId, listId);
     return {
       status: HttpStatus.OK,
@@ -67,8 +65,8 @@ export class CardsController {
    * @returns
    */
   @UseGuards(AuthGuard('jwt'))
-  @ApiParam({ name: 'cardId', description: '카드 ID' })
-  @Get('/:cardId') // 인증으로 userId 받아서 멤버인지 검증 필요
+  @ApiParam({ name: 'cardId', description: '카드 ID', required: true })
+  @Get('/:cardId')
   async readCard(@Param('cardId') cardId: number, @Request() req) {
     const userId = req.user.id;
     const card = await this.cardsService.readCard(userId, cardId);
@@ -84,7 +82,8 @@ export class CardsController {
    * @returns
    */
   @UseGuards(AuthGuard('jwt'))
-  @Patch('/:cardId') // 인증으로 userId도 받아서 작성자만 수정권한 줘야함..
+  @ApiParam({ name: 'cardId', description: '카드 ID', required: true })
+  @Patch('/:cardId')
   async updateCard(
     @Param('cardId') cardId: number,
     @Body() updateCardDto: UpdateCardDto,
@@ -104,7 +103,8 @@ export class CardsController {
    * @returns
    */
   @UseGuards(AuthGuard('jwt'))
-  @Delete('/:cardId') // 인증으로 userId도 받아서 작성자만 수정권한 줘야함..
+  @ApiParam({ name: 'cardId', description: '카드 ID', required: true })
+  @Delete('/:cardId')
   async deleteCard(@Param('cardId') cardId: number, @Request() req) {
     const userId = req.user.id;
     const card = await this.cardsService.deleteCard(userId, cardId);
@@ -122,6 +122,7 @@ export class CardsController {
    * @returns
    */
   @UseGuards(AuthGuard('jwt'))
+  @ApiParam({ name: 'cardId', description: '카드 ID', required: true })
   @Patch('/:cardId/deadline')
   async updateDeadline(
     @Param('cardId') cardId: number,
@@ -144,6 +145,7 @@ export class CardsController {
    * @returns
    */
   @UseGuards(AuthGuard('jwt'))
+  @ApiParam({ name: 'cardId', description: '카드 ID', required: true })
   @Post('/:cardId/workers')
   async createWorkers(
     @Param('cardId') cardId: number,
@@ -166,6 +168,7 @@ export class CardsController {
    * @returns
    */
   @UseGuards(AuthGuard('jwt'))
+  @ApiParam({ name: 'cardId', description: '카드 ID', required: true })
   @Patch('/:cardId/order')
   async updateOrder(
     @Param('cardId') cardId: number,

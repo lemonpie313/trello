@@ -29,9 +29,9 @@ export class CardsService {
 
     const previousCards = await this.cardsRepository.find({
       where: {
-        lists: {
-          listId,
-        },
+        // lists: {
+        //   listId,
+        // },
       },
     });
     let lexoRank: string;
@@ -60,9 +60,9 @@ export class CardsService {
 
     const cards = await this.cardsRepository.find({
       where: {
-        lists: {
-          listId,
-        },
+        // lists: {
+        //   listId,
+        // },
       },
       select: {
         cardId: true,

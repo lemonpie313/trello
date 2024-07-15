@@ -1,6 +1,18 @@
-import { Body, Controller, HttpStatus, Query, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ChecklistsService } from './checklists.service';
 import { CreateUpdateChecklistDto } from './dtos/create-update-checklist.dto';
 
@@ -11,11 +23,16 @@ import { CreateUpdateChecklistDto } from './dtos/create-update-checklist.dto';
 export class ChecklistsController {
   constructor(private readonly checklistsService: ChecklistsService) {}
 
+  /**
+   * 체크리스트 생성
+   * @returns
+   */
   @UseGuards(AuthGuard('jwt'))
-  @ApiQuery({ name: 'cardId', required: true })
+  @ApiQuery({ name: 'cardId', description: '카드 ID', required: true })
+  @Post('/')
   async createChecklist(
     @Body() createChecklistDto: CreateUpdateChecklistDto,
-    @Query() cardId: number,
+    @Query('cardId') cardId: number,
     @Request() req
   ) {
     const userId = req.user.id;
@@ -31,9 +48,14 @@ export class ChecklistsController {
     };
   }
 
+  /**
+   * 체크리스트 조회
+   * @returns
+   */
   @UseGuards(AuthGuard('jwt'))
-  @ApiQuery({ name: 'cardId', required: true })
-  async readChecklist(@Query() cardId: number, @Request() req) {
+  @ApiQuery({ name: 'cardId', description: '카드 ID', required: true })
+  @Get('/')
+  async readChecklist(@Query('cardId') cardId: number, @Request() req) {
     const userId = req.user.id;
     const checklists = await this.checklistsService.readChecklists(userId, cardId);
     return {
@@ -43,10 +65,15 @@ export class ChecklistsController {
     };
   }
 
+  /**
+   * 체크리스트 수정
+   * @returns
+   */
   @UseGuards(AuthGuard('jwt'))
-  @ApiQuery({ name: 'checklistId', required: true })
+  @ApiParam({ name: 'checklistId', description: '체크리스트 ID', required: true })
+  @Patch('/:checklistId')
   async updateChecklist(
-    @Query() checklistId: number,
+    @Param('checklistId') checklistId: number,
     @Body() updateChecklistDto: CreateUpdateChecklistDto,
     @Request() req
   ) {
@@ -63,9 +90,14 @@ export class ChecklistsController {
     };
   }
 
+  /**
+   * 체크리스트 삭제
+   * @returns
+   */
   @UseGuards(AuthGuard('jwt'))
-  @ApiQuery({ name: 'checklistId', required: true })
-  async deleteChecklist(@Query() checklistId: number, @Request() req) {
+  @ApiParam({ name: 'checklistId', description: '체크리스트 ID' , required: true })
+  @Delete('/:checklistId')
+  async deleteChecklist(@Param('checklistId') checklistId: number, @Request() req) {
     const userId = req.user.id;
     await this.checklistsService.deleteChecklist(userId, checklistId);
     return {
