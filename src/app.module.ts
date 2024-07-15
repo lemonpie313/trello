@@ -10,6 +10,7 @@ import { BoardsModule } from './boards/boards.module';
 import { ListsModule } from './lists/lists.module';
 import { CardsModule } from './cards/cards.module';
 import { NotificationsGateway } from './notifications/notifications.gateway';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { NotificationsGateway } from './notifications/notifications.gateway';
     BoardsModule,
     ListsModule,
     CardsModule,
+    NotificationsModule
   ],
   controllers: [AppController],
   providers: [NotificationsGateway],

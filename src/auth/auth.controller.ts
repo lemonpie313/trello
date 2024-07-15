@@ -36,7 +36,7 @@ export class AuthController {
   @UseGuards(AuthGuard('customlocal'))
   @Post('/sign-in')
    async signIn(@Request() req, @Body() SignInDto:SignInDto){
-    const userId = req.user.id
+    const userId = req.user.userId
     const data = await this.authService.signIn(userId);
 
     return  {
