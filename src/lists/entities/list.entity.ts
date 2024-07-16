@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsNumber, IsString } from "class-validator";
-import { LexoRank } from "lexorank";
+import { Board } from "src/boards/entities/board.entity";
 import { Cards } from "src/cards/entities/cards.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
@@ -18,11 +18,6 @@ export class Lists {
   @IsNotEmpty()
   title: string;
 
-  @Column()
-  @IsNumber()
-  @IsNotEmpty()
-  boardId: number;
-
   @Column({type:'varchar'})
   order:string
 
@@ -34,4 +29,8 @@ export class Lists {
 
   @OneToMany((type)=>Cards, cards=>cards.lists)
   cards:Cards[]
+
+  @ManyToOne((type)=>Board, board=>board.lists)
+  board:Board
+
 }

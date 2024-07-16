@@ -14,7 +14,7 @@ export class ListsService {
 
   async createlist(boardId:number, {title}:CreateListDto){
     const listAllFind = await this.listsRepository.find({
-      where: { boardId }
+      where: {board: {boardId}}
   });
     if (listAllFind.length > 0) {
       const newLexo = LexoRank.parse(listAllFind[listAllFind.length - 1].order).genNext();
@@ -29,7 +29,7 @@ export class ListsService {
 
   async findAllList(boardId:number){
     const data = this.listsRepository.find({
-      where: {boardId},
+      where: {board: {boardId}},
       order: {order:"ASC"},
       relations:['cards'],     
       select: {
@@ -61,7 +61,7 @@ export class ListsService {
 
   async moveList(listId: number, boardId: number, movedListId: number) {
     const listAllFind = await this.listsRepository.find({
-        where: { boardId },
+        where: { board: {boardId}},
         order: { order: "ASC"}
     });
 
