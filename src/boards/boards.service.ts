@@ -1,4 +1,10 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpCode,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Board } from './entities/board.entity';
 import { Like, Repository } from 'typeorm';
@@ -7,14 +13,15 @@ import { UpdateBoardDto } from './dtos/update-board.dto';
 import { BOARD_ROLE } from './types/board-roles.type';
 import { NotificationsGateway } from 'src/notifications/notifications.gateway';
 import { Members } from './entities/member.entity';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class BoardsService {
   constructor(
     @InjectRepository(Board) private readonly boardReporitory: Repository<Board>,
     @InjectRepository(Members) private readonly memberReporitory: Repository<Members>,
-    private readonly notificationsGateway: NotificationsGateway
-
+    private readonly notificationsGateway: NotificationsGateway,
+    private readonly authService: AuthService
   ) {}
 
   async create(createBoardDto: CreateBoardDto, userId: number) {
@@ -34,20 +41,22 @@ export class BoardsService {
     return board;
   }
 
-  async findAll(title: string) {
+  async findAll(title: string, userId: number) {
     let condition = {};
     if (title) {
       condition = { title: Like(`${title}%`) };
     }
-    const boards = await this.boardReporitory.find({
-      where: {
-        ...condition,
-      },
+    const boards = await this.memberReporitory.find({
+      where: { userId, board: { ...condition } },
+      relations: ['board'],
     });
     if (!boards) {
       throw new NotFoundException('등록된 보드가 없습니다.');
     }
-    return boards;
+    const result = boards.map((data) => {
+      return { board: data.board };
+    });
+    return result;
   }
 
   async findOne(boardId: number) {
@@ -57,15 +66,23 @@ export class BoardsService {
     if (!board) {
       throw new NotFoundException('존재하지 않는 보드입니다.');
     }
-    // 릴레이션 추가 예정
     return board;
   }
 
-  async update(updateBoardDto: UpdateBoardDto, boardId: number) {
+  async findOneBoard(boardId: number, userId: number) {
+    await this.authService.validateMember(boardId, userId);
+    const board = this.findOne(boardId);
+    if (!board) {
+      throw new NotFoundException('존재하지 않는 보드입니다.');
+    }
+    return board;
+  }
+
+  async update(updateBoardDto: UpdateBoardDto, boardId: number, userId: number) {
     const { title, background, description } = updateBoardDto;
-    const board = await this.boardReporitory.findOne({
-      where: { boardId },
-    });
+
+    await this.authService.validateOwner(boardId, userId);
+    const board = await this.findOne(boardId);
     if (!board) {
       throw new NotFoundException('보드 정보를 찾을 수 없습니다.');
     }
@@ -77,26 +94,30 @@ export class BoardsService {
         ...(description && { description }),
       }
     );
-    return boardUpdate;
+    return this.findOne(boardId);
   }
 
-  async delete(boardId: number) {
+  async delete(boardId: number, userId: number) {
+    await this.authService.validateOwner(boardId, userId);
     const board = await this.boardReporitory.findOne({
       where: { boardId },
     });
     if (!board) {
       throw new NotFoundException('보드 정보를 찾을 수 없습니다.');
     }
-    const boardDelete = await this.boardReporitory.delete({ boardId });
-    return boardDelete;
+    await this.boardReporitory.delete({ boardId });
+    return boardId;
   }
 
-  async invite(boardId: number, userId: number) {
-    const member = await this.memberReporitory.findOne({ where: { userId } });
+  async invite(boardId: number, InviteUserId: number, userId: number) {
+    await this.authService.validateOwner(boardId, userId);
+    const member = await this.memberReporitory.findOne({
+      where: { userId: InviteUserId, boardId },
+    });
     if (member) {
       throw new BadRequestException('이미 등록된 멤버입니다.');
     }
-    const invite = await this.memberReporitory.save({ boardId, userId });
+    const invite = await this.memberReporitory.save({ boardId, userId: InviteUserId });
     return invite;
   }
 }

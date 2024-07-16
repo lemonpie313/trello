@@ -65,7 +65,6 @@ export class ListsService {
   async deleteList(boardId: number, listId: number) {
     console.log(boardId, listId);
     await this.listsRepository.delete({ boardId, listId });
-
     return true;
   }
 }
