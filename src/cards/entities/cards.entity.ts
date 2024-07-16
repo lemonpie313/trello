@@ -12,6 +12,7 @@ import {
 import { Workers } from './workers.entity';
 import { Lists } from 'src/lists/entities/list.entity';
 import { Checklists } from 'src/checklists/entities/checklists.entity';
+import { Comment } from 'src/comments/entities/comment.entity'
 
 @Entity('cards')
 export class Cards {
@@ -73,5 +74,8 @@ export class Cards {
 
   @OneToMany(() => Checklists, (checklists) => checklists.cards)
   checklists: Checklists[];
+
+  @OneToMany(() => Comment, (comments) => comments.card)
+  comments: Comment[]
 
 }
