@@ -6,23 +6,20 @@ import { usersUpdateDto } from './dto/user.update.dto';
 
 @Injectable()
 export class UsersService {
-  @InjectRepository(User) private readonly userRepository: Repository<User>
+  @InjectRepository(User) private readonly userRepository: Repository<User>;
 
-  async findMe(id:number){
-    const user = await this.userRepository.findOneBy({id})
-    if(!user) throw new NotFoundException('존재하는 데이터가 없습니다.')
-    return user
+  async findMe(userId: number) {
+    const user = await this.userRepository.findOneBy({ userId });
+    if (!user) throw new NotFoundException('존재하는 데이터가 없습니다.');
+    return user;
   }
 
-  async updateMe(id:number, {bio, profileImg}:usersUpdateDto){
-    if(!id) throw new NotFoundException('존재하는 데이터가 없습니다.')
-    await this.userRepository.update(
-      {id},
-      {bio, profileImg}
-    )
+  async updateMe(userId: number, { bio, profileImg }: usersUpdateDto) {
+    if (!userId) throw new NotFoundException('존재하는 데이터가 없습니다.');
+    await this.userRepository.update({ userId }, { bio, profileImg });
 
-    const data = await this.userRepository.findOneBy({id})
+    const data = await this.userRepository.findOneBy({ userId });
 
-    return data
+    return data;
   }
 }

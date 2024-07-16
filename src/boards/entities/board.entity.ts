@@ -3,19 +3,20 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { IsNotEmpty, IsString } from 'class-validator';
+import { User } from 'src/users/entity/users.entity';
+import { Members } from './member.entity';
+import { Lists } from 'src/lists/entities/list.entity';
 
 @Entity('boards')
 export class Board {
   @PrimaryGeneratedColumn({ unsigned: true })
-  id: number;
-
-  @Column({ unsigned: true, nullable: true })
-  ownerID: number;
+  boardId: number;
 
   /**
    * 보드 제목
@@ -48,4 +49,10 @@ export class Board {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => Members, (member) => member.board, { cascade: true })
+  members: Members[];
+
+  // @OneToMany(() => Lists, (lists) => lists.board, { cascade: true })
+  // lists: Lists;
 }

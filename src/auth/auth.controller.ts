@@ -8,7 +8,7 @@ import { ApiTags } from '@nestjs/swagger';
 @ApiTags('AUTH API')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService){}
+  constructor(private readonly authService: AuthService) {}
 
   /**
    * 회원가입
@@ -16,33 +16,33 @@ export class AuthController {
    * @returns
    */
   @Post('/sign-up')
-   async signUp(@Body() signUpDto:SignUpDto){
-      const data = await this.authService.signUp(signUpDto)
+  async signUp(@Body() signUpDto: SignUpDto) {
+    const data = await this.authService.signUp(signUpDto);
 
-      return  {
-        statuscode: HttpStatus.OK,
-        message: '회원가입에 성공하셧습니다.',
-        data: {...data, password:undefined}
-      }
-   }
-  
-  
-    /**
+    return {
+      statuscode: HttpStatus.OK,
+      message: '회원가입에 성공하셧습니다.',
+      data: { ...data, password: undefined },
+    };
+  }
+
+  /**
    * 로그인
-   * @param req 
+   * @param req
    * @param signIpDto
    * @returns
    */
   @UseGuards(AuthGuard('customlocal'))
   @Post('/sign-in')
-   async signIn(@Request() req, @Body() SignInDto:SignInDto){
-    const userId = req.user.id
+  async signIn(@Request() req, @Body() SignInDto: SignInDto) {
+    const userId = req.user.userId;
+
     const data = await this.authService.signIn(userId);
 
-    return  {
+    return {
       statuscode: HttpStatus.OK,
       message: '로그인에 성공하셧습니다.',
-      data
-    }
-   }
+      data,
+    };
+  }
 }

@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { BoardsModule } from './boards/boards.module';
 import { ListsModule } from './lists/lists.module';
 import { CardsModule } from './cards/cards.module';
+import { ChecklistsModule } from './checklists/checklists.module';
 import { CommentsModule } from './comments/comments.module';
 
 @Module({
@@ -23,6 +24,7 @@ import { CommentsModule } from './comments/comments.module';
     BoardsModule,
     ListsModule,
     CardsModule,
+    ChecklistsModule,
     CommentsModule,
   ],
   controllers: [AppController],

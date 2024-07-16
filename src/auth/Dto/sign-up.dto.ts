@@ -1,12 +1,9 @@
-import { ApiProperty, PickType } from "@nestjs/swagger";
-import { IsNotEmpty, IsString } from "class-validator";
-import { User } from "src/users/entity/users.entity";
+import { ApiProperty, PickType } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
+import { User } from 'src/users/entity/users.entity';
 
-
-
-export class SignUpDto extends PickType(User,['email','password','bio']){
-
-        /**
+export class SignUpDto extends PickType(User, ['email', 'password', 'bio']) {
+  /**
    * 비밀번호 확인
    * @example '!123Example'
    */
