@@ -56,6 +56,7 @@ export class CommentsService {
     return savedComment
   }
 
+
   //댓글 삭제
   async remove(commentId: number, userId: number) {
     //댓글 존재 여부 확인
@@ -72,5 +73,6 @@ export class CommentsService {
     //댓글 삭제
     await this.commentRepository.delete(commentId)
     return  { commentId}
+
   }
 }

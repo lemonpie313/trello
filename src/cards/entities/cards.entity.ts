@@ -78,4 +78,5 @@ export class Cards {
   @OneToMany(() => Comment, (comments) => comments.card)
   comments: Comment[]
 
+
 }

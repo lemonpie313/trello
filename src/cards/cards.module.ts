@@ -9,7 +9,6 @@ import { Comment } from 'src/comments/entities/comment.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Cards, Workers, Members, Comment])],
-
   controllers: [CardsController],
   providers: [CardsService],
 })
