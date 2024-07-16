@@ -17,13 +17,13 @@ import { Workers } from 'src/cards/entities/workers.entity';
 
 @Entity('members')
 export class Members {
-  @PrimaryGeneratedColumn({ unsigned: true })
+  @PrimaryGeneratedColumn()
   memberId: number;
 
-  @Column({ unsigned: true })
+  @Column()
   userId: number;
 
-  @Column({ unsigned: true })
+  @Column()
   boardId: number;
 
   @IsEnum(BOARD_ROLE)
@@ -42,5 +42,5 @@ export class Members {
   board: Board;
 
   @OneToMany(() => Workers, (workers) => workers.members, { cascade: true })
-  workers: Workers;
+  workers: Workers[];
 }

@@ -15,7 +15,7 @@ import { Lists } from 'src/lists/entities/list.entity';
 
 @Entity('boards')
 export class Board {
-  @PrimaryGeneratedColumn({ unsigned: true })
+  @PrimaryGeneratedColumn()
   boardId: number;
 
   /**
@@ -54,5 +54,5 @@ export class Board {
   members: Members[];
 
   @OneToMany(() => Lists, (lists) => lists.board, { cascade: true })
-  lists: Lists;
+  lists: Lists[];
 }

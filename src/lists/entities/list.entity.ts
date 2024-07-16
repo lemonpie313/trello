@@ -5,16 +5,20 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('lists')
 export class Lists {
   @PrimaryGeneratedColumn()
   listId: number;
+
+  @Column()
+  boardId: number;
 
   /**
    * 제목
@@ -37,6 +41,7 @@ export class Lists {
   @OneToMany((type) => Cards, (cards) => cards.lists)
   cards: Cards[];
 
-  @ManyToOne((type) => Board, (board) => board.lists)
+  @ManyToOne((type) => Board, (board) => board.lists, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'board_id' })
   board: Board;
 }

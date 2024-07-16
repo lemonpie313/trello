@@ -6,9 +6,10 @@ import { Cards } from './entities/cards.entity';
 import { Workers } from './entities/workers.entity';
 import { Members } from 'src/boards/entities/member.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Cards, Workers, Members, Comment])],
+  imports: [TypeOrmModule.forFeature([Cards, Workers, Members, Comment]), AuthModule],
   controllers: [CardsController],
   providers: [CardsService],
 })

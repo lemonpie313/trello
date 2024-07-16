@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -12,12 +13,15 @@ import {
 } from 'typeorm';
 import { Workers } from './workers.entity';
 import { Checklists } from 'src/checklists/entities/checklists.entity';
-import { Comment } from 'src/comments/entities/comment.entity'
+import { Comment } from 'src/comments/entities/comment.entity';
 
 @Entity('cards')
 export class Cards {
   @PrimaryGeneratedColumn()
   cardId: number;
+
+  @Column()
+  listId: number;
 
   /**
    * 제목
@@ -67,6 +71,7 @@ export class Cards {
   deletedAt: Date;
 
   @ManyToOne(() => Lists, (lists) => lists.cards, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'list_id' })
   lists: Lists;
 
   @OneToMany(() => Workers, (workers) => workers.cards, { cascade: true })
@@ -76,7 +81,5 @@ export class Cards {
   checklists: Checklists[];
 
   @OneToMany(() => Comment, (comments) => comments.card)
-  comments: Comment[]
-
-
+  comments: Comment[];
 }
