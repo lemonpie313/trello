@@ -18,6 +18,7 @@ import { Members } from 'src/boards/entities/member.entity';
 import { Board } from 'src/boards/entities/board.entity';
 import { Lists } from 'src/lists/entities/list.entity';
 import { Cards } from 'src/cards/entities/cards.entity';
+import { Checklists } from 'src/checklists/entities/checklists.entity';
 
 @Injectable()
 export class AuthService {
@@ -27,6 +28,7 @@ export class AuthService {
     @InjectRepository(Board) private readonly boardsRepository: Repository<Board>,
     @InjectRepository(Lists) private readonly listsRepository: Repository<Lists>,
     @InjectRepository(Cards) private readonly cardsRepository: Repository<Cards>,
+    @InjectRepository(Checklists) private readonly checkListsRepository: Repository<Checklists>,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService
   ) {}
@@ -84,7 +86,7 @@ export class AuthService {
   async validateListToMember(listId: number, userId: number) {
     const list = await this.findOneByList(listId);
     if (!list) {
-      throw new UnauthorizedException('존재하지 않는 리스트입니다.');
+      throw new NotFoundException('존재하지 않는 리스트입니다.');
     }
     return this.validateMember(list.board.boardId, userId);
   }
@@ -93,9 +95,17 @@ export class AuthService {
   async validateCardToMember(cardId: number, userId: number) {
     const card = await this.findOneByCard(cardId);
     if (!card) {
-      throw new UnauthorizedException('존재하지 않는 리스트입니다.');
+      throw new NotFoundException('존재하지 않는 카드입니다.');
     }
     return this.validateMember(card.lists.board.boardId, userId);
+  }
+
+  async validateCheckListToMember(checklistId: number, userId: number) {
+    const checklist = await this.findOneByCheckList(checklistId);
+    if (!checklist) {
+      throw new NotFoundException('존재하지 않는 체크리스트입니다.');
+    }
+    return this.validateCardToMember(checklist.cardId, userId);
   }
 
   //보드 아이디 + 유저 아이디 => 멤버 확인
@@ -116,5 +126,12 @@ export class AuthService {
       relations: ['lists', 'lists.board'],
     });
     return card;
+  }
+
+  async findOneByCheckList(checklistId: number) {
+    const checklist = await this.checkListsRepository.findOne({
+      where: { checklistId },
+    });
+    return checklist;
   }
 }

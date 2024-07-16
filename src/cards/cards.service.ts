@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateCardDto } from './dtos/create-card.dto';
 import { Cards } from './entities/cards.entity';
@@ -11,16 +11,19 @@ import { Workers } from './entities/workers.entity';
 import { LexoRank } from 'lexorank';
 import { UpdateOrderDto } from './dtos/update-order.dto';
 import { Members } from 'src/boards/entities/member.entity';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class CardsService {
   constructor(
     @InjectRepository(Cards) private readonly cardsRepository: Repository<Cards>,
     @InjectRepository(Workers) private readonly workersRepository: Repository<Workers>,
-    @InjectRepository(Members) private readonly membersRepository: Repository<Members>
+    @InjectRepository(Members) private readonly membersRepository: Repository<Members>,
+    private readonly authService: AuthService
   ) {}
 
   async createCard(userId: number, listId: number, createCardDto: CreateCardDto) {
+    await this.authService.validateListToMember(listId, userId);
     const { title, description, color, startDate, startTime } = createCardDto;
     let startAt: Date;
     if (startDate && startTime) {
@@ -47,9 +50,6 @@ export class CardsService {
         .genNext()
         .toString();
     }
-
-    console.log(lexoRank);
-
     const card = await this.cardsRepository.save({
       title,
       description,
@@ -64,8 +64,7 @@ export class CardsService {
   }
 
   async readAllCards(userId: number, listId: number) {
-    // 인증(?)함수
-
+    await this.authService.validateListToMember(listId, userId);
     const cards = await this.cardsRepository.find({
       where: {
         lists: {
@@ -87,7 +86,7 @@ export class CardsService {
   }
 
   async readCard(userId: number, cardId: number) {
-    // 인증(?)함수
+    const member = await this.authService.validateCardToMember(cardId, userId);
 
     const card = await this.cardsRepository.findOne({
       where: {
@@ -118,9 +117,9 @@ export class CardsService {
       const workMember = await this.workersRepository.findOne({
         where: {
           workerId: worker.workerId,
-          // board: {
-          //   boardId,
-          // } // 인증 함수에서 가져와질듯
+          members: {
+            boardId: member.boardId,
+          },
         },
         relations: {
           user: true,
@@ -148,7 +147,7 @@ export class CardsService {
   }
 
   async updateCard(userId: number, cardId: number, updateCardDto: UpdateCardDto) {
-    // 인증(?)함수
+    await this.authService.validateCardToMember(cardId, userId);
 
     const { title, description, color, startDate, startTime, dueDate, dueTime } = updateCardDto;
     let startAt: Date;
@@ -203,6 +202,7 @@ export class CardsService {
   }
 
   async deleteCard(userId: number, cardId: number) {
+    await this.authService.validateCardToMember(cardId, userId);
     const card = await this.cardsRepository.findOne({
       where: {
         cardId,
@@ -227,6 +227,7 @@ export class CardsService {
     cardId: number,
     createCardDeadlineDto: CreateCardDeadlineDto
   ) {
+    await this.authService.validateCardToMember(cardId, userId);
     const { dueDate, dueTime } = createCardDeadlineDto;
     const deadline = new Date(`${dueDate} ${dueTime}`);
 
@@ -270,7 +271,7 @@ export class CardsService {
 
   /* 미완성 */
   async createWorkers(userId: number, cardId: number, createWorkerDto: CreateWorkerDto) {
-    // 인증(?)함수
+    await this.authService.validateCardToMember(cardId, userId);
 
     const card = await this.cardsRepository.findOne({
       where: {
@@ -285,52 +286,27 @@ export class CardsService {
     }
     // workers 가 members에 해당되는지 봐야됨
     const { workers } = createWorkerDto;
-    for (const memberId of workers) {
+    for (const userId of workers) {
       // 이미 추가돼있는지 확인
       const existsMember = await this.workersRepository.findOne({
         where: {
-          members: {
-            memberId,
-          },
+          userId,
           cards: {
             cardId,
           },
         },
       });
       if (existsMember) {
-        continue;
+        throw new BadRequestException('이미 등록된 작업자입니다.');
       }
 
       // 그사람이 멤버가 맞는지 확인
-      const member = await this.membersRepository.findOne({
-        where: {
-          memberId,
-          // board: {
-          //   boardId,
-          // } // 얘는 인증 함수에서 어떻게든 넘어올거같음
-        },
-        relations: {
-          user: true,
-        },
-      });
-      if (_.isNil(member)) {
-        throw new NotFoundException({
-          status: 404,
-          message: '해당 멤버가 존재하지 않습니다.',
-        });
-      }
-
+      const member = await this.authService.validateCardToMember(cardId, userId);
       //저장
       await this.workersRepository.save({
-        cards: {
-          cardId,
-        },
-        members: {
-          memberId,
-        },
-        user: {
-          userId: member.user.userId,
-        },
+        cardId,
+        memberId: member.memberId,
+        userId: member.userId,
       });
     }
 
@@ -345,7 +321,7 @@ export class CardsService {
 
     // 업로드한것 조회
     let createdWorkers = [];
-    for (let worker of card.workers) {
+    for (let worker of updatedCard.workers) {
       const workMember = await this.membersRepository.findOne({
         where: {
           workers: {
@@ -357,6 +333,7 @@ export class CardsService {
         },
         relations: {
           user: true,
+          workers: true,
         },
       });
       createdWorkers.push({
@@ -375,7 +352,7 @@ export class CardsService {
       deadline: updatedCard.deadline,
       createdAt: updatedCard.createdAt,
       updatedAt: updatedCard.updatedAt,
-      workers,
+      createdWorkers,
     };
   }
 
@@ -383,6 +360,7 @@ export class CardsService {
 
   async updateOrder(userId: number, cardId: number, updateOrderDto: UpdateOrderDto) {
     // 인증(?)함수
+    await this.authService.validateCardToMember(userId, cardId);
 
     const { movedCardId } = updateOrderDto;
 

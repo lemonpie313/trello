@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus, Query, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpStatus,
+  Query,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CommentsService } from './comments.service';
 import { CommentDto } from './dto/comment.dto';
@@ -13,81 +25,72 @@ export class CommentsController {
 
   /**
    * 댓글 생성
-   * @param cardId 
-   * @param boardId 
-   * @param listId 
-   * @param commentDto 
-   * @returns 
+   * @param cardId
+   * @param commentDto
+   * @returns
    */
-
   @Post()
-  async create(@Req() req, @Param('cardId') cardId: number, @Query('boardId') boardId: number, @Query('listId') listId: number, @Body() commentDto: CommentDto) {
-     const userId = req.user.id
-      const data = await this.commentsService.create( cardId, userId, commentDto);
+  async create(@Req() req, @Param('cardId') cardId: number, @Body() commentDto: CommentDto) {
+    const userId = req.user.id;
+    const data = await this.commentsService.create(cardId, userId, commentDto);
 
-      return {
-        status: HttpStatus.CREATED,
-        message: '댓글 생성에 성공했습니다.',
-        data
-      }
+    return {
+      status: HttpStatus.CREATED,
+      message: '댓글 생성에 성공했습니다.',
+      data,
+    };
   }
 
   /**
    * 댓글 조회
-   * @param cardId 
-   * @param boardId 
-   * @param listId 
-   * @param commentDto 
-   * @returns 
+   * @param cardId
+   * @returns
    */
   @Get()
-  async findAll(@Param('cardId') cardId: number, @Query('boardId') boardId: number, @Query('listId') listId: number) {
-    const data = await this.commentsService.findAll(cardId)
-    
+  async findAll(@Req() req, @Param('cardId') cardId: number) {
+    const userId = req.user.id;
+    const data = await this.commentsService.findAll(cardId, userId);
+
     return {
       status: HttpStatus.OK,
       message: '댓글 조회에 성공했습니다.',
-      data
-    }
+      data,
+    };
   }
 
   /**
    * 댓글 수정
-   * @param cardId 
-   * @param boardId 
-   * @param listId 
-   * @param commentDto 
-   * @returns 
+   * @param commentDto
+   * @param commentId
+   * @returns
    */
   @Patch(':commentId')
-  async update(@Req() req, @Param('commentId') commentId: number, @Param('cardId') cardId: number, @Query('boardId') boardId: number, @Query('listId') listId: number, @Body() commentDto: CommentDto) {
-    const userId = req.user.id
-    const data = await this.commentsService.update( commentId, userId, commentDto);
+  async update(@Req() req, @Param('commentId') commentId: number, @Body() commentDto: CommentDto) {
+    const userId = req.user.id;
+    const data = await this.commentsService.update(commentId, userId, commentDto);
 
     return {
       status: HttpStatus.OK,
       message: '댓글 수정에 성공했습니다.',
-      data
-    }
+      data,
+    };
   }
 
   /**
    * 댓글 삭제
-   * @param cardId 
-   * @param boardId 
-   * @param listId 
-   * @param commentDto 
-   * @returns 
+   * @param commentId
+   * @param commentDto
+   * @returns
    */
   @Delete(':commentId')
-  async remove(@Req() req, @Param('commentId') commentId: number, @Param('cardId') cardId: number, @Query('boardId') boardId: number, @Query('listId') listId: number, @Body() commentDto: CommentDto) {
-    const userId = req.user.id
-    const data = await this.commentsService.remove( commentId, userId);
+  async remove(@Req() req, @Param('commentId') commentId: number) {
+    const userId = req.user.id;
+    const data = await this.commentsService.remove(commentId, userId);
 
     return {
       status: HttpStatus.OK,
       message: '댓글 삭제에 성공했습니다.',
-      data
-    }
+      data,
+    };
   }
 }

@@ -10,7 +10,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Comment } from "src/comments/entities/comment.entity";
+import { Comment } from 'src/comments/entities/comment.entity';
 
 @Entity('users')
 export class User {
@@ -68,11 +68,9 @@ export class User {
   @OneToMany(() => Members, (member) => member.user)
   members: Members[];
 
-@OneToMany(() => Workers, (workers) => workers.user)
-workers: Workers[];
+  @OneToMany(() => Workers, (workers) => workers.user)
+  workers: Workers[];
 
-  @OneToMany(() => Comment, comment => comment.user)
-  comments: Comment[]
-
-  }
-
+  @OneToMany(() => Comment, (comment) => comment.user)
+  comments: Comment[];
+}

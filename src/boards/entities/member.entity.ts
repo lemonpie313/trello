@@ -42,5 +42,5 @@ export class Members {
   board: Board;
 
   @OneToMany(() => Workers, (workers) => workers.members, { cascade: true })
-  workers: Workers;
+  workers: Workers[];
 }

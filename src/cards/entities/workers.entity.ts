@@ -4,6 +4,7 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -18,8 +19,14 @@ export class Workers {
   @PrimaryGeneratedColumn()
   workerId: number;
 
-  // @Column()
-  // memberId: number;
+  @Column()
+  cardId: number;
+
+  @Column()
+  memberId: number;
+
+  @Column()
+  userId: number;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -31,11 +38,14 @@ export class Workers {
   deletedAt: Date;
 
   @ManyToOne(() => Cards, (cards) => cards.workers, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'card_id' })
   cards: Cards;
 
   @ManyToOne(() => Members, (members) => members.workers, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'member_id' })
   members: Members;
 
   @ManyToOne(() => User, (user) => user.workers, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 }
