@@ -7,5 +7,5 @@ export class UpdateOrderDto {
    */
   @IsNotEmpty({ message: '이동하려는 순서를 입력해주세요.' })
   @IsString()
-  rank: number;
+  movedCardId: number;
 }

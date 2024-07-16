@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateListDto } from './dtos/create-list.dto';
 import { LexoRank } from 'lexorank';
 import { AuthService } from 'src/auth/auth.service';
+import _ from 'lodash';
 
 @Injectable()
 export class ListsService {
@@ -19,12 +20,26 @@ export class ListsService {
       where: { board: { boardId } },
     });
     if (listAllFind.length > 0) {
-      const newLexo = LexoRank.parse(listAllFind[listAllFind.length - 1].order).genNext();
-      const data = await this.listsRepository.save({ title, boardId, order: newLexo.toString() });
+      const order = LexoRank.parse(listAllFind[listAllFind.length - 1].order)
+        .genNext()
+        .toString();
+      const data = await this.listsRepository.save({
+        title,
+        board: {
+          boardId,
+        },
+        order,
+      });
       return data;
     } else {
       const order = LexoRank.middle().toString();
-      const data = await this.listsRepository.save({ title, boardId, order: order });
+      const data = await this.listsRepository.save({
+        title,
+        board: {
+          boardId,
+        },
+        order,
+      });
       return data;
     }
   }
@@ -50,6 +65,17 @@ export class ListsService {
 
   async updateList(listId: number, { title }: CreateListDto, userId: number) {
     await this.authService.validateListToMember(listId, userId);
+    const list = await this.listsRepository.findOne({
+      where: {
+        listId,
+      },
+    });
+    if (_.isNil(list)) {
+      throw new NotFoundException({
+        status: 404,
+        message: '해당 리스트를 찾을 수 없습니다.',
+      });
+    }
     await this.listsRepository.update({ listId }, { title });
     const data = await this.listsRepository.findOneBy({ listId });
     return data;
@@ -57,6 +83,18 @@ export class ListsService {
 
   async deleteList(listId: number, userId: number) {
     await this.authService.validateListToMember(listId, userId);
+    const list = await this.listsRepository.findOne({
+      where: {
+        listId,
+      },
+    });
+    if (_.isNil(list)) {
+      throw new NotFoundException({
+        status: 404,
+        message: '해당 리스트를 찾을 수 없습니다.',
+      });
+    }
+
     await this.listsRepository.delete({ listId });
 
     return true;
