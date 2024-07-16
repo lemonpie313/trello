@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
 
-describe('UsersController'/* test할 이름을 작성 */, () => {
+describe('UsersController' /* test할 이름을 작성 */, () => {
   let controller: UsersController;
 
   beforeEach(async () => {
@@ -12,7 +12,7 @@ describe('UsersController'/* test할 이름을 작성 */, () => {
     controller = module.get<UsersController>(UsersController);
   });
 
-  it('should be defined'/* 자식?? */, () => {
+  it('should be defined' /* 자식?? */, () => {
     expect(controller).toBeDefined();
   });
 });

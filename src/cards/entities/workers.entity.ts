@@ -36,6 +36,6 @@ export class Workers {
   @ManyToOne(() => Members, (members) => members.workers, { onDelete: 'CASCADE' })
   members: Members;
 
-  // @ManyToOne(() => User, (user) => user.workers, { onDelete: 'CASCADE' })
-  // user: User;
+  @ManyToOne(() => User, (user) => user.workers, { onDelete: 'CASCADE' })
+  user: User;
 }
