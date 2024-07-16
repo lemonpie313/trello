@@ -1,4 +1,5 @@
 import { IsDate, IsHexColor, IsNotEmpty, IsString } from 'class-validator';
+import { Lists } from 'src/lists/entities/list.entity';
 import {
   Column,
   CreateDateColumn,
@@ -10,7 +11,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Workers } from './workers.entity';
-import { Lists } from 'src/lists/entities/list.entity';
 import { Checklists } from 'src/checklists/entities/checklists.entity';
 import { Comment } from 'src/comments/entities/comment.entity'
 

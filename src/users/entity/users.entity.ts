@@ -52,12 +52,12 @@ export class User {
 
   /**
    * 이미지
-   * @example 'asdkfweif.img'
+   * @example 'wekfjowefm.jpg'
    */
   @ApiProperty()
   @IsString()
   @Column()
-  profileImg: string;
+  profileImg?: string;
 
   @CreateDateColumn()
   createAt: Date;
