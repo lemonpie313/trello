@@ -10,6 +10,7 @@ import { BoardsModule } from './boards/boards.module';
 import { ListsModule } from './lists/lists.module';
 import { CardsModule } from './cards/cards.module';
 import { ChecklistsModule } from './checklists/checklists.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ChecklistsModule } from './checklists/checklists.module';
     ListsModule,
     CardsModule,
     ChecklistsModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [],
