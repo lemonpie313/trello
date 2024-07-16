@@ -1,18 +1,49 @@
-import { Controller, Get, HttpStatus } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, HttpStatus, Patch, Request, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { UsersService } from './users.service';
+import { AuthGuard } from '@nestjs/passport';
+import { JwtPayload } from 'src/auth/interface/jwt-payload.interface';
+import { usersUpdateDto } from './dto/user.update.dto';
 
-@ApiTags('테스트')
+@ApiTags('USER API')
 @Controller('users')
 export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
+
   /**
-   * 테스트용
+   * 개인정보조회
+   * @param req
    * @returns
    */
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @Get('/me')
-  async findMe() {
+  async findMe(@Request() req) {
+    const userId = req.user.id;
+    const data = await this.usersService.findMe(userId);
     return {
-        statusCode: HttpStatus.OK,
-        message: '테스트 성공.',
-      };
-    }
+      statusCode: HttpStatus.OK,
+      message: '정상적으로 조회가 완료되었습니다.',
+      data: { ...data, password: undefined },
+    };
+  }
+
+  /**
+   * 개인정보수정
+   * @param req
+   * @param usersUpdateDto
+   * @returns
+   */
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('/me')
+  async updateMe(@Request() req, @Body() usersUpdateDto: usersUpdateDto) {
+    const userId = req.user.id;
+    const data = await this.usersService.updateMe(userId, usersUpdateDto);
+    return {
+      statusCode: HttpStatus.OK,
+      message: '정상적으로 조회가 완료되었습니다.',
+      data: { ...data, password: undefined },
+    };
+  }
 }

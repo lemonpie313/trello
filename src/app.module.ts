@@ -7,6 +7,8 @@ import { UsersModule } from './users/users.module';
 import { BoardsModule } from './boards/boards.module';
 import { ListsModule } from './lists/lists.module';
 import { CardsModule } from './cards/cards.module';
+import { ChecklistsModule } from './checklists/checklists.module';
+import { CommentsModule } from './comments/comments.module';
 import { configModuleValidationSchema } from './configs/env-validation.config';
 
 @Module({
@@ -35,6 +37,8 @@ import { configModuleValidationSchema } from './configs/env-validation.config';
     BoardsModule,
     ListsModule,
     CardsModule,
+    ChecklistsModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [],
