@@ -53,6 +53,6 @@ export class Board {
   @OneToMany(() => Members, (member) => member.board, { cascade: true })
   members: Members[];
 
-  // @OneToMany(() => Lists, (lists) => lists.board, { cascade: true })
-  // lists: Lists;
+  @OneToMany(() => Lists, (lists) => lists.board, { cascade: true })
+  lists: Lists;
 }
