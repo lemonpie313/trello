@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Get,
-  Post,
-} from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post } from '@nestjs/common';
 import { LexoService } from './lexo.service';
 
 @Controller('lexo')
@@ -33,9 +27,7 @@ export class LexoController {
       whereId < 0 ||
       whereId >= this.lexoService.items.length
     ) {
-      throw new BadRequestException(
-        '유효하지 않은 데이터 또는 인덱스 값입니다.',
-      );
+      throw new BadRequestException('유효하지 않은 데이터 또는 인덱스 값입니다.');
     }
 
     this.lexoService.move(itemId, whereId);
