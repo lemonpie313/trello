@@ -109,22 +109,21 @@ export class CardsService {
     }
     let workers = [];
     for (let worker of card.workers) {
-      const workMember = await this.membersRepository.findOne({
+      const workMember = await this.workersRepository.findOne({
         where: {
-          workers: {
-            workerId: worker.workerId,
-          },
+          workerId: worker.workerId,
           // board: {
           //   boardId,
           // } // 인증 함수에서 가져와질듯
         },
         relations: {
           user: true,
+          members: true,
         },
       });
       workers.push({
         userId: workMember.user.userId,
-        memberId: workMember.memberId,
+        memberId: workMember.members.memberId,
         email: workMember.user.email,
         profileImg: workMember.user.profileImg,
       });
@@ -223,7 +222,7 @@ export class CardsService {
     cardId: number,
     createCardDeadlineDto: CreateCardDeadlineDto
   ) {
-    // 인증(?)함수
+    // 인증(?)함수 > boardId 반환
 
     const { dueDate, dueTime } = createCardDeadlineDto;
     const deadline = new Date(`${dueDate} ${dueTime}`);
@@ -325,6 +324,9 @@ export class CardsService {
         members: {
           memberId,
         },
+        user: {
+          userId: member.user.userId,
+        }
       });
     }
 

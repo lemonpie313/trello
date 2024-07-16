@@ -15,6 +15,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ChecklistsService } from './checklists.service';
 import { CreateUpdateChecklistDto } from './dtos/create-update-checklist.dto';
+import { ActivateChecklistDto } from './dtos/activate-checklist.dto';
 
 @ApiTags('CHECKLISTS API')
 @ApiBearerAuth()
@@ -86,6 +87,31 @@ export class ChecklistsController {
     return {
       status: HttpStatus.OK,
       message: '체크리스트 수정이 완료되었습니다.',
+      data: checklist,
+    };
+  }
+
+  /**
+   * 체크리스트 체크여부 수정
+   * @returns
+   */
+  @UseGuards(AuthGuard('jwt'))
+  @ApiParam({ name: 'checklistId', description: '체크리스트 ID', required: true })
+  @Patch('/:checklistId/check')
+  async updateChecklistCheck(
+    @Param('checklistId') checklistId: number,
+    @Body() activateChecklistDto: ActivateChecklistDto,
+    @Request() req
+  ) {
+    const userId = req.user.id;
+    const checklist = await this.checklistsService.activateChecklist(
+      userId,
+      checklistId,
+      activateChecklistDto,
+    );
+    return {
+      status: HttpStatus.OK,
+      message: '체크리스트 체크 수정이 완료되었습니다.',
       data: checklist,
     };
   }

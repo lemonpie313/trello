@@ -67,6 +67,6 @@ export class User {
   @OneToMany(() => Members, (member) => member.user)
   members: Members[];
 
-  // @OneToMany(() => Workers, (workers) => workers.user)
-  // workers: Workers[];
+  @OneToMany(() => Workers, (workers) => workers.user)
+  workers: Workers[];
 }
