@@ -106,14 +106,14 @@ export class AuthService {
 
   // 리스트 아이디 => 보드 아이디
   async findOneByList(listId: number) {
-    const list = await this.listsRepository.findOne({ where: { listId }, relations: ['boards'] });
+    const list = await this.listsRepository.findOne({ where: { listId }, relations: ['board'] });
     return list;
   }
 
   async findOneByCard(cardId: number) {
     const card = await this.cardsRepository.findOne({
       where: { cardId },
-      relations: ['lists', 'lists.boards'],
+      relations: ['lists', 'lists.board'],
     });
     return card;
   }

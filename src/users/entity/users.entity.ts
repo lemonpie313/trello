@@ -13,7 +13,7 @@ import {
 
 @Entity('users')
 export class User {
-  @PrimaryGeneratedColumn({ unsigned: true })
+  @PrimaryGeneratedColumn()
   userId: number;
 
   /**
