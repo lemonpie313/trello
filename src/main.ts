@@ -1,6 +1,5 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -8,20 +7,29 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const configService = app.get(ConfigService);
-  const port = configService.get<number>('PORT');
+  // CORS 설정
+  app.enableCors({
+    origin: 'http://localhost:3000', // 프론트엔드 주소
+    credentials: true,
+  });
 
+  const configService = app.get(ConfigService);
+  const port = configService.get<number>('PORT') || 3001;
+
+  // 글로벌 URL 프리픽스 설정
   app.setGlobalPrefix('api', { exclude: ['/health-check'] });
 
+  // 글로벌 파이프라인 설정
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
     })
   );
 
+  // Swagger 설정
   const config = new DocumentBuilder()
-    .setTitle('trello')
-    .setDescription('API description of trello project')
+    .setTitle('Trello Clone')
+    .setDescription('API description of Trello project')
     .setVersion('1.0')
     .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
     .build();
