@@ -86,7 +86,7 @@ export class AuthService {
     if (!list) {
       throw new UnauthorizedException('존재하지 않는 리스트입니다.');
     }
-    return this.validateMember(list.boardId, userId);
+    return this.validateMember(list.board.boardId, userId);
   }
 
   // 카드 아이디
@@ -95,7 +95,7 @@ export class AuthService {
     if (!card) {
       throw new UnauthorizedException('존재하지 않는 리스트입니다.');
     }
-    return this.validateMember(card.lists.boardId, userId);
+    return this.validateMember(card.lists.board.boardId, userId);
   }
 
   //보드 아이디 + 유저 아이디 => 멤버 확인
