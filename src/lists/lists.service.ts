@@ -102,18 +102,36 @@ export class ListsService {
 
   async moveList(listId: number, boardId: number, movedListId: number, userId: number) {
     await this.authService.validateMember(boardId, userId);
+    const list = await this.listsRepository.findOne({
+      where: {
+        listId,
+      },
+    });
+    if (_.isNil(list)) {
+      throw new NotFoundException({
+        status: 404,
+        message: '해당 리스트를 찾을 수 없습니다.',
+      });
+    }
+
     const listAllFind = await this.listsRepository.find({
-      where: { board: { boardId } },
-      order: { order: 'ASC' },
+      where: {
+        board: {
+          boardId,
+        },
+      },
+      order: {
+        order: 'ASC',
+      },
     });
 
     let newLexo: string;
 
-    const findIndex = listAllFind.findIndex((el) => el.listId === movedListId);
+    const findIndex = listAllFind.findIndex((el) => el.listId == movedListId);
 
-    if (findIndex === listAllFind.length - 1) {
+    if (findIndex == listAllFind.length - 1) {
       newLexo = LexoRank.parse(listAllFind[findIndex].order).genNext().toString();
-    } else if (movedListId === -1) {
+    } else if (movedListId == -1) {
       newLexo = LexoRank.parse(listAllFind[0].order).genPrev().toString();
     } else {
       newLexo = LexoRank.parse(listAllFind[findIndex].order)
@@ -121,8 +139,27 @@ export class ListsService {
         .toString();
     }
 
-    const data = await this.listsRepository.update({ listId }, { order: newLexo });
+    await this.listsRepository.update({ listId }, { order: newLexo });
 
+    const data = this.listsRepository.find({
+      where: {
+        board: {
+          boardId,
+        },
+      },
+      order: {
+        order: 'ASC',
+      },
+      relations: ['cards'],
+      select: {
+        cards: {
+          title: true,
+          description: true,
+          startAt: true,
+          deadline: true,
+        },
+      },
+    });
     return data;
   }
 }

@@ -36,7 +36,6 @@ export class ListsController {
     @Body() createListDto: CreateListDto
   ) {
     const userId = req.user.id;
-    console.log(req.user);
     const data = await this.listsService.createlist(boardId, createListDto, userId);
 
     return {
