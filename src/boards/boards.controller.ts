@@ -35,6 +35,7 @@ export class BoardsController {
   @UseGuards(AuthGuard('jwt'))
   @Post()
   async create(@Body() createBoardDto: CreateBoardDto, @Request() req) {
+    console.log('req.user:', req.user)
     const userId = req.user.userId;
     if(!userId){
       throw new Error('userId is undefined or null');

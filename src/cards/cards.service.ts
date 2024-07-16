@@ -11,13 +11,15 @@ import { Workers } from './entities/workers.entity';
 import { LexoRank } from 'lexorank';
 import { UpdateOrderDto } from './dtos/update-order.dto';
 import { Members } from 'src/boards/entities/member.entity';
+import { NotificationsGateway } from 'src/notifications/notifications.gateway';
 
 @Injectable()
 export class CardsService {
   constructor(
     @InjectRepository(Cards) private readonly cardsRepository: Repository<Cards>,
     @InjectRepository(Workers) private readonly workersRepository: Repository<Workers>,
-    @InjectRepository(Members) private readonly membersRepository: Repository<Members>
+    @InjectRepository(Members) private readonly membersRepository: Repository<Members>,
+    private readonly notificationsGateway: NotificationsGateway
   ) {}
 
   async createCard(userId: number, listId: number, createCardDto: CreateCardDto) {
@@ -54,6 +56,10 @@ export class CardsService {
       startAt,
       lexoRank,
     });
+
+    //알림 전송
+    this.notificationsGateway.sendNotification(userId, '새 카드가 생성되었습니다.')
+
     return card;
   }
 
@@ -179,6 +185,9 @@ export class CardsService {
       }
     );
 
+    //수정 알림 전송
+    this.notificationsGateway.sendNotification(userId, '카드가 업데이트되었습니다.')
+
     const updatedCard = await this.cardsRepository.findOne({
       where: {
         cardId,
@@ -216,7 +225,11 @@ export class CardsService {
     await this.cardsRepository.softDelete({
       cardId,
     });
+      //삭제 알림 전송
+       this.notificationsGateway.sendNotification(userId, '카드가 삭제되었습니다.')
   }
+
+
 
   async updateDeadline(
     userId: number,
@@ -247,6 +260,10 @@ export class CardsService {
         deadline,
       }
     );
+
+    // 마감일자 변경 알림 전송
+     this.notificationsGateway.sendNotification(userId, '카드 마감일자가 변경되었습니다.');
+
     const updatedCard = await this.cardsRepository.findOne({
       where: {
         cardId,

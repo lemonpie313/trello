@@ -28,6 +28,10 @@ export class NotificationsGateway
     }
 
     async sendNotification(userId: number, message: string) {
+      if(userId === undefined || userId === null) {
+        console.error('userId is undefiened or null')
+        return
+      }
       console.log(`Sending notification to user ${userId}: ${message}`);
       this.server.to(userId.toString()).emit('notification', message);
 

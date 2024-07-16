@@ -12,6 +12,7 @@ export class NotificationController {
 
     @Get()
     async getNotifications(@Request() req){
+        console.log('req.user', req.user)
         const userId = req.user.userId
         const notifications = await this.notificationsService.getNotifications(userId)
         return notifications
