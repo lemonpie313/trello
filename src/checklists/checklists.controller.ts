@@ -107,7 +107,7 @@ export class ChecklistsController {
     const checklist = await this.checklistsService.activateChecklist(
       userId,
       checklistId,
-      activateChecklistDto,
+      activateChecklistDto
     );
     return {
       status: HttpStatus.OK,

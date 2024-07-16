@@ -72,7 +72,11 @@ export class ChecklistsService {
     return updatedChecklist;
   }
 
-  async activateChecklist(userId: number, checklistId: number, activateChecklistDto: ActivateChecklistDto) {
+  async activateChecklist(
+    userId: number,
+    checklistId: number,
+    activateChecklistDto: ActivateChecklistDto
+  ) {
     // 인증 함수
     const checklist = await this.checklistsRepository.findOne({
       where: {

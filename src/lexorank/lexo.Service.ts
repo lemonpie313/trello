@@ -1,7 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { LexoRank } from 'lexorank';
 
-
 export class LexoService {
   items: { data: string; lexo: LexoRank }[] = [
     { data: 'item1', lexo: null },

@@ -31,9 +31,12 @@ export class CardsService {
 
     const previousCards = await this.cardsRepository.find({
       where: {
-        // lists: {
-        //   listId,
-        // },
+        lists: {
+          listId,
+        },
+      },
+      order: {
+        lexoRank: 'ASC',
       },
     });
     let lexoRank: string;
@@ -53,6 +56,9 @@ export class CardsService {
       color,
       startAt,
       lexoRank,
+      lists: {
+        listId,
+      },
     });
     return card;
   }
@@ -62,9 +68,9 @@ export class CardsService {
 
     const cards = await this.cardsRepository.find({
       where: {
-        // lists: {
-        //   listId,
-        // },
+        lists: {
+          listId,
+        },
       },
       select: {
         cardId: true,
@@ -165,7 +171,7 @@ export class CardsService {
         message: '해당 카드가 존재하지 않습니다.',
       });
     }
-    // 사용자가 속한 보드의 카드가 아닐 경우 에러 반환
+    // 인증 함수, 사용자가 속한 보드의 카드가 아닐 경우 에러 반환
 
     await this.cardsRepository.update(
       { cardId },
@@ -197,8 +203,6 @@ export class CardsService {
   }
 
   async deleteCard(userId: number, cardId: number) {
-    // 인증(?)함수
-
     const card = await this.cardsRepository.findOne({
       where: {
         cardId,
@@ -210,6 +214,7 @@ export class CardsService {
         message: '해당 카드가 존재하지 않습니다.',
       });
     }
+    // 인증(?)함수
     // 사용자가 속한 보드의 카드가 아닐 경우 에러 반환
 
     await this.cardsRepository.softDelete({
@@ -222,8 +227,6 @@ export class CardsService {
     cardId: number,
     createCardDeadlineDto: CreateCardDeadlineDto
   ) {
-    // 인증(?)함수 > boardId 반환
-
     const { dueDate, dueTime } = createCardDeadlineDto;
     const deadline = new Date(`${dueDate} ${dueTime}`);
 
@@ -238,6 +241,7 @@ export class CardsService {
         message: '해당 카드가 존재하지 않습니다.',
       });
     }
+    // 인증(?)함수 > boardId 반환
     // 사용자가 만든 카드가 아닐 경우 권한 없다고 에러
 
     await this.cardsRepository.update(
@@ -326,7 +330,7 @@ export class CardsService {
         },
         user: {
           userId: member.user.userId,
-        }
+        },
       });
     }
 
@@ -364,13 +368,13 @@ export class CardsService {
     }
     return {
       cardId,
-      title: card.title,
-      description: card.description,
-      color: card.color,
-      startAt: card.startAt,
-      deadline: card.deadline,
-      createdAt: card.createdAt,
-      updatedAt: card.updatedAt,
+      title: updatedCard.title,
+      description: updatedCard.description,
+      color: updatedCard.color,
+      startAt: updatedCard.startAt,
+      deadline: updatedCard.deadline,
+      createdAt: updatedCard.createdAt,
+      updatedAt: updatedCard.updatedAt,
       workers,
     };
   }
@@ -380,15 +384,15 @@ export class CardsService {
   async updateOrder(userId: number, cardId: number, updateOrderDto: UpdateOrderDto) {
     // 인증(?)함수
 
-    const { rank } = updateOrderDto;
+    const { movedCardId } = updateOrderDto;
 
     const card = await this.cardsRepository.findOne({
       where: {
         cardId,
       },
-      // relations: {
-      //   lists: true,
-      // },
+      relations: {
+        lists: true,
+      },
     });
     if (_.isNil(card)) {
       throw new NotFoundException({
@@ -399,24 +403,23 @@ export class CardsService {
 
     const cards = await this.cardsRepository.find({
       where: {
-        // lists: {
-        //   listId: card.lists.listId,
-        // },
+        lists: {
+          listId: card.lists.listId,
+        },
       },
       order: {
-        lexoRank: 'asc',
+        lexoRank: 'ASC',
       },
     });
     let lexoRank: string;
-    if (rank >= cards.length) {
-      lexoRank = LexoRank.parse(cards[cards.length - 2].lexoRank)
-        .genNext()
-        .toString();
-    } else if (rank <= 1) {
+    const findIndex = cards.findIndex((el) => el.cardId == movedCardId);
+    if (findIndex === cards.length - 1) {
+      lexoRank = LexoRank.parse(cards[findIndex].lexoRank).genNext().toString();
+    } else if (movedCardId == -1) {
       lexoRank = LexoRank.parse(cards[0].lexoRank).genPrev().toString();
     } else {
-      lexoRank = LexoRank.parse(cards[rank - 1].lexoRank)
-        .between(LexoRank.parse(cards[rank].lexoRank))
+      lexoRank = LexoRank.parse(cards[findIndex].lexoRank)
+        .between(LexoRank.parse(cards[findIndex + 1].lexoRank))
         .toString();
     }
 
@@ -428,19 +431,20 @@ export class CardsService {
     );
     const updatedCards = await this.cardsRepository.find({
       where: {
-        // lists: {
-        //   listId: card.lists.listId,
-        // },
+        lists: {
+          listId: card.lists.listId,
+        },
       },
       select: {
         cardId: true,
         title: true,
         color: true,
+        lexoRank: true,
         createdAt: true,
         updatedAt: true,
       },
       order: {
-        lexoRank: 'asc',
+        lexoRank: 'ASC',
       },
     });
     return updatedCards;
