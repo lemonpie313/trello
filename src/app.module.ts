@@ -12,6 +12,7 @@ import { CardsModule } from './cards/cards.module';
 import { NotificationsGateway } from './notifications/notifications.gateway';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ChecklistsModule } from './checklists/checklists.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ChecklistsModule } from './checklists/checklists.module';
     CardsModule,
     NotificationsModule,
     ChecklistsModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [NotificationsGateway],
