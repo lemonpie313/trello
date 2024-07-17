@@ -19,7 +19,7 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/me')
   async findMe(@Request() req) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const data = await this.usersService.findMe(userId);
     return {
       statusCode: HttpStatus.OK,

@@ -33,7 +33,7 @@ export class AuthService {
     private readonly jwtService: JwtService
   ) {}
 
-  async signUp({ email, password, passwordConfirm, bio }: SignUpDto) {
+  async signUp({ email, password, passwordConfirm, name, bio }: SignUpDto) {
     if (password !== passwordConfirm)
       throw new BadRequestException('두 비밀번호가 일치하지 않습니다.');
 
@@ -43,7 +43,7 @@ export class AuthService {
     const passwordHash = this.configService.get<string>('PASSWORD_HASH');
     const hashedPassword = bcrypt.hashSync(password, passwordHash);
 
-    const data = await this.userRepository.save({ email, password: hashedPassword, bio });
+    const data = await this.userRepository.save({ email, password: hashedPassword, name, bio });
 
     return data;
   }

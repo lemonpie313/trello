@@ -35,7 +35,11 @@ export class BoardsController {
 
   @Post()
   async create(@Body() createBoardDto: CreateBoardDto, @Request() req) {
-    const userId = req.user.id;
+    console.log('req.user:', req.user)
+    const userId = req.user.userId;
+    if(!userId){
+      throw new Error('userId is undefined or null');
+    }
     const data = await this.boardService.create(createBoardDto, userId);
     return {
       statusCode: HttpStatus.CREATED,
