@@ -51,8 +51,9 @@ function SignUp() {
           required
         />
         <button type="submit">Sign Up</button>
+        <button onClick={() => navigate('/')}>Sign In</button>
+
       </form>
-      <button onClick={() => navigate('/')}>Sign In</button>
     </div>
   );
 }

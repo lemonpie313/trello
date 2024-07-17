@@ -39,8 +39,8 @@ function SignIn() {
           required
         />
         <button type="submit">Sign In</button>
+        <button onClick={() => navigate('/signup')}>Sign Up</button>
       </form>
-      <button onClick={() => navigate('/signup')}>Sign Up</button>
     </div>
   );
 }
