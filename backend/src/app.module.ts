@@ -13,6 +13,7 @@ import { ChecklistsModule } from './checklists/checklists.module';
 import { CommentsModule } from './comments/comments.module';
 import { configModuleValidationSchema } from './configs/env-validation.config';
 import { typeOrmModuleOptions } from './configs/database.config';
+import { Notification } from './notifications/entity/notification.entity';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { typeOrmModuleOptions } from './configs/database.config';
     NotificationsModule,
     ChecklistsModule,
     CommentsModule,
+    Notification
   ],
   controllers: [AppController],
   providers: [NotificationsGateway],
