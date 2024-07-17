@@ -505,7 +505,6 @@ export class CardsService {
         `${user.name}님이 ${card.title} 카드의 위치를 변경했습니다.`
       );
     }
-
     return updatedCards;
   }
 

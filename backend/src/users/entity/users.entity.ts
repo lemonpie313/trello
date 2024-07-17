@@ -11,6 +11,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Comment } from 'src/comments/entities/comment.entity';
+import { Notification } from 'src/notifications/entity/notification.entity'
 
 @Entity('users')
 export class User {
@@ -83,5 +84,8 @@ export class User {
 
   @OneToMany(() => Comment, (comment) => comment.user)
   comments: Comment[];
+
+  @OneToMany(() => Notification, (notification) => notification.user)
+  notifications: Notification[];
   
 }
