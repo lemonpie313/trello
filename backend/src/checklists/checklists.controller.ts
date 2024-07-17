@@ -36,7 +36,7 @@ export class ChecklistsController {
     @Query('cardId') cardId: number,
     @Request() req
   ) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const checklist = await this.checklistsService.createChecklist(
       userId,
       cardId,
@@ -57,7 +57,7 @@ export class ChecklistsController {
   @ApiQuery({ name: 'cardId', description: '카드 ID', required: true })
   @Get('/')
   async readChecklist(@Query('cardId') cardId: number, @Request() req) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const checklists = await this.checklistsService.readChecklists(userId, cardId);
     return {
       status: HttpStatus.OK,
@@ -78,7 +78,7 @@ export class ChecklistsController {
     @Body() updateChecklistDto: CreateUpdateChecklistDto,
     @Request() req
   ) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const checklist = await this.checklistsService.updateChecklist(
       userId,
       checklistId,
@@ -103,7 +103,7 @@ export class ChecklistsController {
     @Body() activateChecklistDto: ActivateChecklistDto,
     @Request() req
   ) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const checklist = await this.checklistsService.activateChecklist(
       userId,
       checklistId,
@@ -124,7 +124,7 @@ export class ChecklistsController {
   @ApiParam({ name: 'checklistId', description: '체크리스트 ID', required: true })
   @Delete('/:checklistId')
   async deleteChecklist(@Param('checklistId') checklistId: number, @Request() req) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     await this.checklistsService.deleteChecklist(userId, checklistId);
     return {
       status: HttpStatus.OK,
