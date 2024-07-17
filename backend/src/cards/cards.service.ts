@@ -314,7 +314,6 @@ export class CardsService {
     return updatedCard;
   }
 
-  /* 미완성 */
   async createWorkers(userId: number, cardId: number, createWorkerDto: CreateWorkerDto) {
     await this.authService.validateCardToMember(cardId, userId);
 
