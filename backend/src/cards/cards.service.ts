@@ -311,7 +311,6 @@ export class CardsService {
     return updatedCard;
   }
 
-  /* 미완성 */
   async createWorkers(userId: number, cardId: number, createWorkerDto: CreateWorkerDto) {
     await this.authService.validateCardToMember(cardId, userId);
 
@@ -397,9 +396,6 @@ export class CardsService {
           workers: {
             workerId: worker.workerId,
           },
-          // board: {
-          //   boardId,
-          // } // 인증 함수에서 가져와질듯
         },
         relations: {
           user: true,
@@ -426,11 +422,10 @@ export class CardsService {
     };
   }
 
-  /*worker 삭제 기능 추가해야함..!!!! */
 
   async updateOrder(userId: number, cardId: number, updateOrderDto: UpdateOrderDto) {
     // 인증(?)함수
-    await this.authService.validateCardToMember(userId, cardId);
+    await this.authService.validateCardToMember(cardId, userId);
 
     const { movedCardId } = updateOrderDto;
 
@@ -512,5 +507,47 @@ export class CardsService {
     }
 
     return updatedCards;
+  }
+
+  async moveCardToList(userId: number, cardId: number, movedListId: number) {
+    console.log(userId);
+    console.log(cardId);
+    console.log(movedListId);
+    await this.authService.validateCardToMember(cardId, userId);
+    await this.authService.validateListToMember(movedListId, userId);
+
+    const previousCards = await this.cardsRepository.find({
+      where: {
+        lists: {
+          listId: movedListId,
+        },
+      },
+      order: {
+        lexoRank: 'ASC',
+      },
+    });
+    let lexoRank: string;
+    if (previousCards.length == 0) {
+      lexoRank = LexoRank.middle().toString();
+    } else {
+      lexoRank = LexoRank.parse(previousCards[previousCards.length - 1].lexoRank)
+        .genNext()
+        .toString();
+    }
+
+    await this.cardsRepository.update(
+      { cardId },
+      {
+        listId: movedListId,
+        lexoRank,
+      }
+    );
+
+    const card = await this.cardsRepository.findOne({
+      where: {
+        cardId,
+      },
+    });
+    return card;
   }
 }
