@@ -35,7 +35,7 @@ export class ListsController {
     @Query('board_id') boardId: number,
     @Body() createListDto: CreateListDto
   ) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const data = await this.listsService.createlist(boardId, createListDto, userId);
 
     return {
@@ -49,10 +49,10 @@ export class ListsController {
    * 특정 보드에 리스트 조회
    * @returns
    */
-  @Get(':listId')
+  @Get('/')
   @ApiQuery({ name: 'board_id', type: Number, description: '보드 ID' })
   async findAllList(@Request() req, @Query('board_id') boardId: number) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const data = await this.listsService.findAllList(boardId, userId);
 
     return {
@@ -73,7 +73,7 @@ export class ListsController {
     @Param('listId') listId: number,
     @Body() createListDto: CreateListDto
   ) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const data = await this.listsService.updateList(listId, createListDto, userId);
 
     return {
@@ -90,7 +90,7 @@ export class ListsController {
   @Delete(':listId')
   @ApiParam({ name: 'listId', type: Number, description: '리스트 ID' })
   async deleteList(@Request() req, @Param('listId') listId: number) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const data = await this.listsService.deleteList(listId, userId);
     if (data) {
       return {
@@ -104,7 +104,7 @@ export class ListsController {
    * 리스트 이동
    * @returns
    */
-  @Patch(':listId/move')
+  @Patch(':listId/order')
   @ApiQuery({ name: 'boardId', type: Number, description: '보드 ID' })
   @ApiQuery({ name: 'movedListId', type: Number, description: '기준' })
   async moveList(
@@ -113,7 +113,7 @@ export class ListsController {
     @Query('boardId') boardId: number,
     @Query('movedListId') movedListId: number
   ) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const movedata = await this.listsService.moveList(listId, boardId, movedListId, userId);
 
     return {

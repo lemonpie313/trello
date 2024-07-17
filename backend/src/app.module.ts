@@ -12,6 +12,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { ChecklistsModule } from './checklists/checklists.module';
 import { CommentsModule } from './comments/comments.module';
 import { configModuleValidationSchema } from './configs/env-validation.config';
+import { typeOrmModuleOptions } from './configs/database.config';
 
 @Module({
   imports: [
@@ -20,20 +21,7 @@ import { configModuleValidationSchema } from './configs/env-validation.config';
       validationSchema: configModuleValidationSchema,
       envFilePath: '.env',
     }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        type: 'mysql',
-        host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT'),
-        username: configService.get<string>('DB_USERNAME'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_NAME'),
-        entities: [__dirname + '/../**/*.entity.{js,ts}'],
-        synchronize: configService.get<boolean>('DB_SYNC'),
-      }),
-    }),
+    TypeOrmModule.forRootAsync(typeOrmModuleOptions),
     AuthModule,
     UsersModule,
     BoardsModule,

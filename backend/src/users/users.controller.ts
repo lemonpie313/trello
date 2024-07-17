@@ -38,7 +38,7 @@ export class UsersController {
   @UseGuards(AuthGuard('jwt'))
   @Patch('/me')
   async updateMe(@Request() req, @Body() usersUpdateDto: usersUpdateDto) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const data = await this.usersService.updateMe(userId, usersUpdateDto);
     return {
       statusCode: HttpStatus.OK,

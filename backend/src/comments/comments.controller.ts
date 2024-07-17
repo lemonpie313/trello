@@ -31,8 +31,8 @@ export class CommentsController {
    */
   @Post()
   async create(@Req() req, @Param('cardId') cardId: number, @Body() commentDto: CommentDto) {
-     const userId = req.user.userId
-      const data = await this.commentsService.create( cardId, userId, commentDto);
+    const userId = req.user.userId;
+    const data = await this.commentsService.create(cardId, userId, commentDto);
 
     return {
       status: HttpStatus.CREATED,
@@ -48,7 +48,7 @@ export class CommentsController {
    */
   @Get()
   async findAll(@Req() req, @Param('cardId') cardId: number) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const data = await this.commentsService.findAll(cardId, userId);
 
     return {
@@ -66,8 +66,8 @@ export class CommentsController {
    */
   @Patch(':commentId')
   async update(@Req() req, @Param('commentId') commentId: number, @Body() commentDto: CommentDto) {
-    const userId = req.user.userId
-    const data = await this.commentsService.update( commentId, userId, commentDto);
+    const userId = req.user.userId;
+    const data = await this.commentsService.update(commentId, userId, commentDto);
 
     return {
       status: HttpStatus.OK,
@@ -84,8 +84,8 @@ export class CommentsController {
    */
   @Delete(':commentId')
   async remove(@Req() req, @Param('commentId') commentId: number) {
-    const userId = req.user.userId
-    const data = await this.commentsService.remove( commentId, userId);
+    const userId = req.user.userId;
+    const data = await this.commentsService.remove(commentId, userId);
 
     return {
       status: HttpStatus.OK,

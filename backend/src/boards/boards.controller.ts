@@ -35,9 +35,9 @@ export class BoardsController {
 
   @Post()
   async create(@Body() createBoardDto: CreateBoardDto, @Request() req) {
-    console.log('req.user:', req.user)
+    console.log('req.user:', req.user);
     const userId = req.user.userId;
-    if(!userId){
+    if (!userId) {
       throw new Error('userId is undefined or null');
     }
     const data = await this.boardService.create(createBoardDto, userId);
@@ -55,7 +55,7 @@ export class BoardsController {
   @Get()
   @ApiQuery({ name: 'title', required: false })
   async findAll(@Request() req, @Query('title') title?: string) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const data = await this.boardService.findAll(title, userId);
 
     return {
@@ -73,7 +73,7 @@ export class BoardsController {
   @ApiParam({ name: 'id', description: '보드 ID' })
   @Get(':id')
   async findOne(@Request() req, @Param('id') id: number) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const data = await this.boardService.findOneBoard(id, userId);
     return {
       statusCode: HttpStatus.OK,
@@ -91,7 +91,7 @@ export class BoardsController {
   @ApiParam({ name: 'id', description: '보드 ID' })
   @Patch(':id')
   async update(@Request() req, @Param('id') id: number, @Body() updateBoardDto: UpdateBoardDto) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const data = await this.boardService.update(updateBoardDto, id, userId);
     return {
       statusCode: HttpStatus.OK,
@@ -108,7 +108,7 @@ export class BoardsController {
   @ApiParam({ name: 'id', description: '보드 ID' })
   @Delete(':id')
   async delete(@Request() req, @Param('id') id: number) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const data = await this.boardService.delete(id, userId);
     return {
       statusCode: HttpStatus.OK,
@@ -138,7 +138,7 @@ export class BoardsController {
     @Param('boardId') boardId: number,
     @Body('InviteUserId') InviteUserId: number
   ) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const data = await this.boardService.invite(boardId, InviteUserId, userId);
     return {
       statusCode: HttpStatus.OK,

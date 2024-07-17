@@ -66,10 +66,12 @@ export class AuthService {
 
   // 멤버 확인
   async validateMember(boardId: number, userId: number) {
+    console.log(userId);
     const member = await this.findMember(userId, boardId);
     if (!member) {
       throw new UnauthorizedException('접근 권한이 없습니다.');
     }
+    console.log('@@@@@@@@@@@', member);
     return member;
   }
 
