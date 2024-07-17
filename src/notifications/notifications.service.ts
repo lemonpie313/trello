@@ -25,13 +25,4 @@ export class NotificationsService {
             order: { createdAt: 'DESC'}
         })
     }
-
-    async readNotification(notificationId: number){
-        const notification = await this.notificationsRepository.findOne({where: {notificationId}})
-        if(notification) {
-            notification.isRead = true;
-            return this.notificationsRepository.save(notification)
-        }
-        return null;
-    }
 }

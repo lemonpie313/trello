@@ -22,7 +22,7 @@ export class CommentsController {
 
   @Post()
   async create(@Req() req, @Param('cardId') cardId: number, @Query('boardId') boardId: number, @Query('listId') listId: number, @Body() commentDto: CommentDto) {
-     const userId = req.user.id
+     const userId = req.user.userId
       const data = await this.commentsService.create( cardId, userId, commentDto);
 
       return {
@@ -61,7 +61,7 @@ export class CommentsController {
    */
   @Patch(':commentId')
   async update(@Req() req, @Param('commentId') commentId: number, @Param('cardId') cardId: number, @Query('boardId') boardId: number, @Query('listId') listId: number, @Body() commentDto: CommentDto) {
-    const userId = req.user.id
+    const userId = req.user.userId
     const data = await this.commentsService.update( commentId, userId, commentDto);
 
     return {
@@ -81,7 +81,7 @@ export class CommentsController {
    */
   @Delete(':commentId')
   async remove(@Req() req, @Param('commentId') commentId: number, @Param('cardId') cardId: number, @Query('boardId') boardId: number, @Query('listId') listId: number, @Body() commentDto: CommentDto) {
-    const userId = req.user.id
+    const userId = req.user.userId
     const data = await this.commentsService.remove( commentId, userId);
 
     return {

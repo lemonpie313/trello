@@ -41,6 +41,16 @@ export class User {
   password: string;
 
   /**
+   * 이름
+   * @example '홍길동'
+   */
+   @ApiProperty()
+   @IsNotEmpty({ message: '이름을 입력해주세요.' })
+   @IsString()
+   @Column()
+   name: string;
+
+  /**
    * 설명
    * @example '안녕하세요. 반갑습니다'
    */
@@ -71,7 +81,7 @@ export class User {
 @OneToMany(() => Workers, (workers) => workers.user)
 workers: Workers[];
 
-  @OneToMany(() => Comment, comment => comment.user)
+  @OneToMany(() => Comment, (comment) => comment.user)
   comments: Comment[]
 
   }

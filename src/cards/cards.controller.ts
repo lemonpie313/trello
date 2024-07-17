@@ -60,7 +60,7 @@ export class CardsController {
   @ApiQuery({ name: 'listId', description: '리스트 ID', required: false })
   @Get('/')
   async readAllCards(@Query('listId') listId: number, @Request() req) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const cards = await this.cardsService.readAllCards(userId, listId);
     return {
       status: HttpStatus.OK,
@@ -76,7 +76,7 @@ export class CardsController {
   @ApiParam({ name: 'cardId', description: '카드 ID', required: true })
   @Get('/:cardId')
   async readCard(@Param('cardId') cardId: number, @Request() req) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const card = await this.cardsService.readCard(userId, cardId);
     return {
       status: HttpStatus.OK,
@@ -97,7 +97,7 @@ export class CardsController {
     @Body() updateCardDto: UpdateCardDto,
     @Request() req
   ) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const card = await this.cardsService.updateCard(userId, cardId, updateCardDto);
     return {
       status: HttpStatus.OK,
@@ -114,7 +114,7 @@ export class CardsController {
   @ApiParam({ name: 'cardId', description: '카드 ID', required: true })
   @Delete('/:cardId')
   async deleteCard(@Param('cardId') cardId: number, @Request() req) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const card = await this.cardsService.deleteCard(userId, cardId);
     return {
       status: HttpStatus.OK,
@@ -137,7 +137,7 @@ export class CardsController {
     @Body() createCardDeadlineDto: CreateCardDeadlineDto,
     @Request() req
   ) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const card = await this.cardsService.updateDeadline(userId, cardId, createCardDeadlineDto);
     return {
       status: HttpStatus.OK,
@@ -160,7 +160,7 @@ export class CardsController {
     @Body() createWorkerDto: CreateWorkerDto,
     @Request() req
   ) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const card = await this.cardsService.createWorkers(userId, cardId, createWorkerDto);
     return {
       status: HttpStatus.CREATED,
@@ -183,7 +183,7 @@ export class CardsController {
     @Query() updateOrderDto: UpdateOrderDto,
     @Request() req
   ) {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const cards = await this.cardsService.updateOrder(userId, cardId, updateOrderDto);
     return {
       status: HttpStatus.OK,

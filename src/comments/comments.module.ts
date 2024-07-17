@@ -5,10 +5,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Cards } from 'src/cards/entities/cards.entity';
 import { User } from 'src/users/entity/users.entity';
 import { Comment } from './entities/comment.entity'
+import { NotificationsModule } from 'src/notifications/notifications.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Comment, User, Cards])
+    TypeOrmModule.forFeature([Comment, User, Cards]), NotificationsModule
   ],
   controllers: [CommentsController],
   providers: [CommentsService],

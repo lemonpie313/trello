@@ -11,7 +11,6 @@ import { Like, Repository } from 'typeorm';
 import { CreateBoardDto } from './dtos/create-board.dto';
 import { UpdateBoardDto } from './dtos/update-board.dto';
 import { BOARD_ROLE } from './types/board-roles.type';
-import { NotificationsGateway } from 'src/notifications/notifications.gateway';
 import { Members } from './entities/member.entity';
 import { AuthService } from 'src/auth/auth.service';
 
@@ -20,7 +19,6 @@ export class BoardsService {
   constructor(
     @InjectRepository(Board) private readonly boardReporitory: Repository<Board>,
     @InjectRepository(Members) private readonly memberReporitory: Repository<Members>,
-    private readonly notificationsGateway: NotificationsGateway,
     private readonly authService: AuthService
   ) {}
 
@@ -34,9 +32,6 @@ export class BoardsService {
         },
       ],
     });
-
-    // 생성 후 알림 전송
-    this.notificationsGateway.sendNotification(userId, '새 보드가 생성되었습니다.')
 
     return board;
   }
