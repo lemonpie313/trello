@@ -507,4 +507,46 @@ export class CardsService {
 
     return updatedCards;
   }
+
+  async moveCardToList(userId: number, cardId: number, movedListId: number) {
+    console.log(userId);
+    console.log(cardId);
+    console.log(movedListId);
+    await this.authService.validateCardToMember(cardId, userId);
+    await this.authService.validateListToMember(movedListId, userId);
+
+    const previousCards = await this.cardsRepository.find({
+      where: {
+        lists: {
+          listId: movedListId,
+        },
+      },
+      order: {
+        lexoRank: 'ASC',
+      },
+    });
+    let lexoRank: string;
+    if (previousCards.length == 0) {
+      lexoRank = LexoRank.middle().toString();
+    } else {
+      lexoRank = LexoRank.parse(previousCards[previousCards.length - 1].lexoRank)
+        .genNext()
+        .toString();
+    }
+
+    await this.cardsRepository.update(
+      { cardId },
+      {
+        listId: movedListId,
+        lexoRank,
+      }
+    );
+
+    const card = await this.cardsRepository.findOne({
+      where: {
+        cardId,
+      },
+    });
+    return card;
+  }
 }

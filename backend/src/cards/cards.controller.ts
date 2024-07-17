@@ -193,4 +193,28 @@ export class CardsController {
       },
     };
   }
+
+  /**
+   * 카드를 다른 리스트로 이동
+   * @returns
+   */
+  @UseGuards(AuthGuard('jwt'))
+  @ApiParam({ name: 'cardId', description: '카드 ID', required: true })
+  @ApiQuery({ name: 'movedListId', description: '이동할 리스트 ID', required: true })
+  @Patch('/:cardId/list')
+  async moveCardToList(
+    @Param('cardId') cardId: number,
+    @Query('movedListId') movedListId: number,
+    @Request() req
+  ) {
+    const userId = req.user.userId;
+    const cards = await this.cardsService.moveCardToList(userId, cardId, movedListId);
+    return {
+      status: HttpStatus.OK,
+      message: '카드 이동이 완료되었습니다.',
+      data: {
+        cards,
+      },
+    };
+  }
 }
