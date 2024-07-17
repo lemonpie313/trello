@@ -15,7 +15,6 @@ import { NotificationsGateway } from 'src/notifications/notifications.gateway';
 import { User } from 'src/users/entity/users.entity';
 import { AuthService } from 'src/auth/auth.service';
 
-
 @Injectable()
 export class CardsService {
   constructor(
@@ -169,7 +168,7 @@ export class CardsService {
       where: {
         cardId,
       },
-      relations: ['workers', 'workers.user']
+      relations: ['workers', 'workers.user'],
     });
     if (_.isNil(card)) {
       throw new NotFoundException({
@@ -190,8 +189,6 @@ export class CardsService {
       }
     );
 
-
-
     const updatedCard = await this.cardsRepository.findOne({
       where: {
         cardId,
@@ -211,15 +208,18 @@ export class CardsService {
     //수정 유저 이름 조회
     const user = await this.usersRepository.findOne({
       where: { userId },
-      select: ['name']
-    })
+      select: ['name'],
+    });
     if (_.isNil(user)) {
       throw new NotFoundException('유저를 찾을 수 없습니다.');
     }
 
     // 카드 수정 알림 전송
     for (const worker of card.workers) {
-      this.notificationsGateway.sendNotification(worker.user.userId, `${user.name}님이 ${title} 카드를 수정했습니다.`);
+      this.notificationsGateway.sendNotification(
+        worker.user.userId,
+        `${user.name}님이 ${title} 카드를 수정했습니다.`
+      );
     }
     return updatedCard;
   }
@@ -243,10 +243,7 @@ export class CardsService {
     await this.cardsRepository.softDelete({
       cardId,
     });
-
   }
-
-
 
   async updateDeadline(
     userId: number,
@@ -261,7 +258,7 @@ export class CardsService {
       where: {
         cardId,
       },
-      relations: ['workers', 'workers.user']
+      relations: ['workers', 'workers.user'],
     });
     if (_.isNil(card)) {
       throw new NotFoundException({
@@ -279,8 +276,6 @@ export class CardsService {
       }
     );
 
-
-
     const updatedCard = await this.cardsRepository.findOne({
       where: {
         cardId,
@@ -297,20 +292,22 @@ export class CardsService {
       },
     });
 
-
     //유저 이름 조회
     const user = await this.usersRepository.findOne({
       where: { userId },
-      select: ['name']
-    })
+      select: ['name'],
+    });
     if (_.isNil(user)) {
       throw new NotFoundException('유저를 찾을 수 없습니다.');
     }
 
     //카드 마감일자 알림 전송
-    for(const worker of card.workers){
-    this.notificationsGateway.sendNotification(worker.user.userId, `${user.name}님이 ${updatedCard.title} 카드 마감일자를 등록했습니다.`)
-     }
+    for (const worker of card.workers) {
+      this.notificationsGateway.sendNotification(
+        worker.user.userId,
+        `${user.name}님이 ${updatedCard.title} 카드 마감일자를 등록했습니다.`
+      );
+    }
     return updatedCard;
   }
 
@@ -321,7 +318,7 @@ export class CardsService {
       where: {
         cardId,
       },
-      relations: ['workers', 'workers.user']
+      relations: ['workers', 'workers.user'],
     });
     if (_.isNil(card)) {
       throw new NotFoundException({
@@ -329,22 +326,21 @@ export class CardsService {
         message: '해당 카드가 존재하지 않습니다.',
       });
     }
-
     //유저 이름 조회
     const user = await this.usersRepository.findOne({
       where: { userId },
-      select: ['name']
-    })
+      select: ['name'],
+    });
     if (_.isNil(user)) {
       throw new NotFoundException('유저를 찾을 수 없습니다.');
     }
     // workers 가 members에 해당되는지 봐야됨
     const { workers } = createWorkerDto;
-    for (const userId of workers) {
+    for (const inviteId of workers) {
       // 이미 추가돼있는지 확인
       const existsMember = await this.workersRepository.findOne({
         where: {
-          userId,
+          userId: inviteId,
           cards: {
             cardId,
           },
@@ -355,7 +351,12 @@ export class CardsService {
       }
 
       // 그사람이 멤버가 맞는지 확인
-      const member = await this.authService.validateCardToMember(cardId, userId);
+      const member = await this.authService.validateCardToMember(cardId, inviteId);
+
+      const mailMember = await this.membersRepository.findOne({
+        where: { userId: inviteId },
+        relations: ['user'],
+      });
 
       //저장
       await this.workersRepository.save({
@@ -364,15 +365,20 @@ export class CardsService {
         userId: member.userId,
       });
 
-  // 멤버 추가 알림 전송
-  for (const worker of card.workers) {
-    this.notificationsGateway.sendNotification(worker.user.userId, `${user.name}님이 ${member.user.name}님을 ${card.title} 카드의 멤버로 초대했습니다.`);
-  }
+      // // 멤버 추가 알림 전송
+      for (const worker of card.workers) {
+        this.notificationsGateway.sendNotification(
+          worker.user.userId,
+          `${user.name}님이 ${mailMember.user.name}님을 ${card.title} 카드의 멤버로 초대했습니다.`
+        );
+      }
 
-  //초대받은 멤버 알림 전송
-  this.notificationsGateway.sendNotification(member.user.userId, `${user.name}님이 ${member.user.name}님을 ${card.title} 카드에 초대했습니다.`)
-
-    }  
+      //초대받은 멤버 알림 전송
+      this.notificationsGateway.sendNotification(
+        mailMember.user.userId,
+        `${user.name}님이 ${mailMember.user.name}님을 ${card.title} 카드에 초대했습니다.`
+      );
+    }
     const updatedCard = await this.cardsRepository.findOne({
       where: {
         cardId,
@@ -382,7 +388,6 @@ export class CardsService {
       },
     });
 
-  
     // 업로드한것 조회
     let createdWorkers = [];
     for (let worker of updatedCard.workers) {
@@ -432,9 +437,7 @@ export class CardsService {
       where: {
         cardId,
       },
-      relations: [
-        'lists', 'workers', 'workers.user'
-      ],
+      relations: ['lists', 'workers', 'workers.user'],
     });
     if (_.isNil(card)) {
       throw new NotFoundException({
@@ -493,16 +496,19 @@ export class CardsService {
     //유저 이름 조회
     const user = await this.usersRepository.findOne({
       where: { userId },
-      select: ['name']
-    })
+      select: ['name'],
+    });
     if (_.isNil(user)) {
       throw new NotFoundException('유저를 찾을 수 없습니다.');
     }
 
-  // 카드 상태 변경 알림 전송
-  for (const worker of card.workers) {
-    this.notificationsGateway.sendNotification(worker.user.userId, `${user.name}님이 ${card.title} 카드의 위치를 변경했습니다.`);
-  }
+    // 카드 상태 변경 알림 전송
+    for (const worker of card.workers) {
+      this.notificationsGateway.sendNotification(
+        worker.user.userId,
+        `${user.name}님이 ${card.title} 카드의 위치를 변경했습니다.`
+      );
+    }
 
     return updatedCards;
   }
