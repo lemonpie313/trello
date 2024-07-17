@@ -28,12 +28,15 @@ export class CardsService {
 
   async createCard(userId: number, listId: number, createCardDto: CreateCardDto) {
     await this.authService.validateListToMember(listId, userId);
-    const { title, description, color, startDate, startTime } = createCardDto;
+    const { title, description, color, startDate, startTime, dueDate, dueTime } = createCardDto;
     let startAt: Date;
+    let deadline: Date;
     if (startDate && startTime) {
       startAt = new Date(`${startDate} ${startTime}`);
-    } else {
-      startAt = new Date();
+    }
+
+    if (dueDate && dueTime) {
+      deadline = new Date(`${startDate} ${startTime}`);
     }
 
     const previousCards = await this.cardsRepository.find({
@@ -59,6 +62,7 @@ export class CardsService {
       description,
       color,
       startAt,
+      deadline,
       lexoRank,
       lists: {
         listId,
@@ -243,72 +247,6 @@ export class CardsService {
     await this.cardsRepository.softDelete({
       cardId,
     });
-  }
-
-  async updateDeadline(
-    userId: number,
-    cardId: number,
-    createCardDeadlineDto: CreateCardDeadlineDto
-  ) {
-    await this.authService.validateCardToMember(cardId, userId);
-    const { dueDate, dueTime } = createCardDeadlineDto;
-    const deadline = new Date(`${dueDate} ${dueTime}`);
-
-    const card = await this.cardsRepository.findOne({
-      where: {
-        cardId,
-      },
-      relations: ['workers', 'workers.user'],
-    });
-    if (_.isNil(card)) {
-      throw new NotFoundException({
-        status: 404,
-        message: '해당 카드가 존재하지 않습니다.',
-      });
-    }
-    // 인증(?)함수 > boardId 반환
-    // 사용자가 만든 카드가 아닐 경우 권한 없다고 에러
-
-    await this.cardsRepository.update(
-      { cardId },
-      {
-        deadline,
-      }
-    );
-
-    const updatedCard = await this.cardsRepository.findOne({
-      where: {
-        cardId,
-      },
-      select: {
-        cardId: true,
-        title: true,
-        description: true,
-        color: true,
-        startAt: true,
-        deadline: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
-
-    //유저 이름 조회
-    const user = await this.usersRepository.findOne({
-      where: { userId },
-      select: ['name'],
-    });
-    if (_.isNil(user)) {
-      throw new NotFoundException('유저를 찾을 수 없습니다.');
-    }
-
-    //카드 마감일자 알림 전송
-    for (const worker of card.workers) {
-      this.notificationsGateway.sendNotification(
-        worker.user.userId,
-        `${user.name}님이 ${updatedCard.title} 카드 마감일자를 등록했습니다.`
-      );
-    }
-    return updatedCard;
   }
 
   async createWorkers(userId: number, cardId: number, createWorkerDto: CreateWorkerDto) {

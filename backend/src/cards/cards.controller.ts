@@ -125,29 +125,6 @@ export class CardsController {
   }
 
   /**
-   * 카드 마감일 지정
-   * @returns
-   */
-  @UseGuards(AuthGuard('jwt'))
-  @ApiParam({ name: 'cardId', description: '카드 ID', required: true })
-  @Patch('/:cardId/deadline')
-  async updateDeadline(
-    @Param('cardId') cardId: number,
-    @Body() createCardDeadlineDto: CreateCardDeadlineDto,
-    @Request() req
-  ) {
-    const userId = req.user.userId;
-    const card = await this.cardsService.updateDeadline(userId, cardId, createCardDeadlineDto);
-    return {
-      status: HttpStatus.OK,
-      message: '카드 마감날짜 지정이 완료되었습니다.',
-      data: {
-        card,
-      },
-    };
-  }
-
-  /**
    * 할당자 지정
    * @returns
    */
