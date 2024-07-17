@@ -18,8 +18,6 @@ import { CreateBoardDto } from './dtos/create-board.dto';
 import { BoardsService } from './boards.service';
 import { UpdateBoardDto } from './dtos/update-board.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { BOARD_ROLE } from './types/board-roles.type';
 // import { TransformInterceptor } from './interceptors/board.interceptors';
 
 @ApiTags('Board API')
@@ -35,7 +33,6 @@ export class BoardsController {
    * @returns
    */
 
-  @UseGuards(AuthGuard('jwt'))
   @Post()
   async create(@Body() createBoardDto: CreateBoardDto, @Request() req) {
     console.log('req.user:', req.user)
@@ -150,8 +147,3 @@ export class BoardsController {
     };
   }
 }
-
-// async findMember(userId: number, boardId: number) {
-//   const member = await this.memberReporitory.findOne({ where: { userId, boardId } });
-//   return member;
-// }

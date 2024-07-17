@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -14,6 +15,8 @@ export class Checklists {
   @PrimaryGeneratedColumn({ unsigned: true })
   checklistId: number;
 
+  @Column()
+  cardId: number;
   /**
    * 체크리스트 내용
    * @example "To-do"
@@ -35,5 +38,6 @@ export class Checklists {
   updatedAt: Date;
 
   @ManyToOne(() => Cards, (cards) => cards.checklists, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'card_id' })
   cards: Cards;
 }

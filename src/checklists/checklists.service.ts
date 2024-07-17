@@ -6,12 +6,14 @@ import { CreateUpdateChecklistDto } from './dtos/create-update-checklist.dto';
 import _ from 'lodash';
 import { Cards } from 'src/cards/entities/cards.entity';
 import { ActivateChecklistDto } from './dtos/activate-checklist.dto';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class ChecklistsService {
   constructor(
     @InjectRepository(Checklists) private readonly checklistsRepository: Repository<Checklists>,
-    @InjectRepository(Cards) private readonly cardsRepository: Repository<Cards>
+    @InjectRepository(Cards) private readonly cardsRepository: Repository<Cards>,
+    private readonly authService: AuthService
   ) {}
 
   async createChecklist(
@@ -19,7 +21,7 @@ export class ChecklistsService {
     cardId: number,
     createChecklistDto: CreateUpdateChecklistDto
   ) {
-    // 인증 함수
+    await this.authService.validateCardToMember(cardId, userId);
     const { content } = createChecklistDto;
     const checklist = await this.checklistsRepository.save({
       cards: {
@@ -32,7 +34,7 @@ export class ChecklistsService {
   }
 
   async readChecklists(userId: number, cardId: number) {
-    // 인증 함수
+    await this.authService.validateCardToMember(cardId, userId);
     const checklists = await this.checklistsRepository.find({
       where: {
         cards: {
@@ -49,6 +51,7 @@ export class ChecklistsService {
     updateChecklistDto: CreateUpdateChecklistDto
   ) {
     // 인증 함수
+    await this.authService.validateCheckListToMember(checklistId, userId);
     const checklist = await this.checklistsRepository.findOne({
       where: {
         checklistId,
@@ -78,6 +81,7 @@ export class ChecklistsService {
     activateChecklistDto: ActivateChecklistDto
   ) {
     // 인증 함수
+    await this.authService.validateCheckListToMember(checklistId, userId);
     const checklist = await this.checklistsRepository.findOne({
       where: {
         checklistId,
@@ -103,7 +107,7 @@ export class ChecklistsService {
 
   async deleteChecklist(userId: number, checklistId: number) {
     // 인증 함수
-
+    await this.authService.validateCheckListToMember(checklistId, userId);
     const checklist = await this.checklistsRepository.findOne({
       where: {
         checklistId,

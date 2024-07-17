@@ -4,22 +4,20 @@ import { Lists } from './entities/list.entity';
 import { Repository } from 'typeorm';
 import { CreateListDto } from './dtos/create-list.dto';
 import { LexoRank } from 'lexorank';
+import { AuthService } from 'src/auth/auth.service';
 import _ from 'lodash';
 
 @Injectable()
 export class ListsService {
   constructor(
-    @InjectRepository(Lists) private readonly listsRepository: Repository<Lists>
-    //@InjectRepository(Board) private readonly boardRepository: Repository<Board>
+    @InjectRepository(Lists) private readonly listsRepository: Repository<Lists>,
+    private readonly authService: AuthService
   ) {}
 
-  async createlist(boardId: number, { title }: CreateListDto) {
+  async createlist(boardId: number, { title }: CreateListDto, userId: number) {
+    await this.authService.validateMember(boardId, userId);
     const listAllFind = await this.listsRepository.find({
-      where: {
-        board: {
-          boardId,
-        },
-      },
+      where: { board: { boardId } },
     });
     if (listAllFind.length > 0) {
       const order = LexoRank.parse(listAllFind[listAllFind.length - 1].order)
@@ -46,16 +44,11 @@ export class ListsService {
     }
   }
 
-  async findAllList(boardId: number) {
+  async findAllList(boardId: number, userId: number) {
+    await this.authService.validateMember(boardId, userId);
     const data = this.listsRepository.find({
-      where: {
-        board: {
-          boardId,
-        },
-      },
-      order: {
-        order: 'ASC',
-      },
+      where: { board: { boardId } },
+      order: { order: 'ASC' },
       relations: ['cards'],
       select: {
         cards: {
@@ -70,7 +63,8 @@ export class ListsService {
     return data;
   }
 
-  async updateList(listId: number, { title }: CreateListDto) {
+  async updateList(listId: number, { title }: CreateListDto, userId: number) {
+    await this.authService.validateListToMember(listId, userId);
     const list = await this.listsRepository.findOne({
       where: {
         listId,
@@ -87,7 +81,8 @@ export class ListsService {
     return data;
   }
 
-  async deleteList(listId: number) {
+  async deleteList(listId: number, userId: number) {
+    await this.authService.validateListToMember(listId, userId);
     const list = await this.listsRepository.findOne({
       where: {
         listId,
@@ -105,7 +100,8 @@ export class ListsService {
     return true;
   }
 
-  async moveList(listId: number, boardId: number, movedListId: number) {
+  async moveList(listId: number, boardId: number, movedListId: number, userId: number) {
+    await this.authService.validateMember(boardId, userId);
     const list = await this.listsRepository.findOne({
       where: {
         listId,
@@ -164,7 +160,6 @@ export class ListsService {
         },
       },
     });
-
     return data;
   }
 }
