@@ -396,9 +396,6 @@ export class CardsService {
           workers: {
             workerId: worker.workerId,
           },
-          // board: {
-          //   boardId,
-          // } // 인증 함수에서 가져와질듯
         },
         relations: {
           user: true,
@@ -425,11 +422,10 @@ export class CardsService {
     };
   }
 
-  /*worker 삭제 기능 추가해야함..!!!! */
 
   async updateOrder(userId: number, cardId: number, updateOrderDto: UpdateOrderDto) {
     // 인증(?)함수
-    await this.authService.validateCardToMember(userId, cardId);
+    await this.authService.validateCardToMember(cardId, userId);
 
     const { movedCardId } = updateOrderDto;
 
