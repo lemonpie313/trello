@@ -30,15 +30,9 @@ export class CommentsController {
    * @returns
    */
   @Post()
-<<<<<<< HEAD
-  async create(@Req() req, @Param('cardId') cardId: number, @Query('boardId') boardId: number, @Query('listId') listId: number, @Body() commentDto: CommentDto) {
+  async create(@Req() req, @Param('cardId') cardId: number, @Body() commentDto: CommentDto) {
      const userId = req.user.userId
       const data = await this.commentsService.create( cardId, userId, commentDto);
-=======
-  async create(@Req() req, @Param('cardId') cardId: number, @Body() commentDto: CommentDto) {
-    const userId = req.user.id;
-    const data = await this.commentsService.create(cardId, userId, commentDto);
->>>>>>> e7de056d0d66f2f82edd8e1cc3f6238945ad457e
 
     return {
       status: HttpStatus.CREATED,
@@ -71,15 +65,9 @@ export class CommentsController {
    * @returns
    */
   @Patch(':commentId')
-<<<<<<< HEAD
-  async update(@Req() req, @Param('commentId') commentId: number, @Param('cardId') cardId: number, @Query('boardId') boardId: number, @Query('listId') listId: number, @Body() commentDto: CommentDto) {
+  async update(@Req() req, @Param('commentId') commentId: number, @Body() commentDto: CommentDto) {
     const userId = req.user.userId
     const data = await this.commentsService.update( commentId, userId, commentDto);
-=======
-  async update(@Req() req, @Param('commentId') commentId: number, @Body() commentDto: CommentDto) {
-    const userId = req.user.id;
-    const data = await this.commentsService.update(commentId, userId, commentDto);
->>>>>>> e7de056d0d66f2f82edd8e1cc3f6238945ad457e
 
     return {
       status: HttpStatus.OK,
@@ -95,15 +83,9 @@ export class CommentsController {
    * @returns
    */
   @Delete(':commentId')
-<<<<<<< HEAD
-  async remove(@Req() req, @Param('commentId') commentId: number, @Param('cardId') cardId: number, @Query('boardId') boardId: number, @Query('listId') listId: number, @Body() commentDto: CommentDto) {
+  async remove(@Req() req, @Param('commentId') commentId: number) {
     const userId = req.user.userId
     const data = await this.commentsService.remove( commentId, userId);
-=======
-  async remove(@Req() req, @Param('commentId') commentId: number) {
-    const userId = req.user.id;
-    const data = await this.commentsService.remove(commentId, userId);
->>>>>>> e7de056d0d66f2f82edd8e1cc3f6238945ad457e
 
     return {
       status: HttpStatus.OK,
