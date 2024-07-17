@@ -51,7 +51,7 @@ export class Cards {
   color: string;
 
   @IsDate()
-  @Column({ type: 'varchar', nullable: false })
+  @Column({ type: 'varchar', nullable: true })
   startAt: Date;
 
   @IsDate()
