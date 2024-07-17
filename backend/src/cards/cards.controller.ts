@@ -39,9 +39,8 @@ export class CardsController {
     @Query('listId') listId: number,
     @Request() req
   ) {
-    console.log('req.user:', req.user);
     const userId = req.user.userId;
-    if(!userId){
+    if (!userId) {
       throw new Error('userId is undefined or null');
     }
     const card = await this.cardsService.createCard(userId, listId, createCardDto); // listId, userId 추가할것
