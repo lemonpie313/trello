@@ -1,30 +1,34 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signUp } from '../services/AuthService';
+import axios from 'axios';
 import './SignUp.css';
 
-const SignUp = () => {
+function SignUp() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
-  const [bio, setBio] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (password !== passwordConfirm) {
+      alert('Passwords do not match');
+      return;
+    }
     try {
-      await signUp({ email, password, passwordConfirm, bio });
-      navigate('/signin');
+      const response = await axios.post('http://localhost:3001/api/auth/sign-up', { email, password });
+      if (response.status === 201) {
+        navigate(`/board/${response.data.boardId}`);
+      }
     } catch (error) {
-      console.error('SignUp error:', error);
-      alert('회원가입 실패!');
+      console.error('Sign up failed:', error);
     }
   };
 
   return (
-    <div className="container">
+    <div className="signup-container">
+      <h2>Sign Up</h2>
       <form onSubmit={handleSubmit}>
-        <h2>Sign Up</h2>
         <input
           type="email"
           placeholder="Email"
@@ -46,16 +50,11 @@ const SignUp = () => {
           onChange={(e) => setPasswordConfirm(e.target.value)}
           required
         />
-        <textarea
-          placeholder="Bio"
-          value={bio}
-          onChange={(e) => setBio(e.target.value)}
-          required
-        />
         <button type="submit">Sign Up</button>
       </form>
+      <button onClick={() => navigate('/')}>Sign In</button>
     </div>
   );
-};
+}
 
 export default SignUp;
