@@ -36,9 +36,9 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document, {
     swaggerOptions: {
-      persistAuthorization: true, //새로고침 시에도 JWT 유지
+      persistAuthorization: true, // 새로고침 시에도 JWT 유지
       tagsSorter: 'alpha', // API 그룹 정렬 알파벳순
-      operationsSorter: 'alpha', //API 그룹내에서도 정렬 알파벳순
+      operationsSorter: 'alpha', // API 그룹내에서도 정렬 알파벳순
     },
   });
 
