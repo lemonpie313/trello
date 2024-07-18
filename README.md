@@ -23,6 +23,58 @@
 ![ex_screenshot](./api1.png)
 ![ex_screenshot](./api2.png)
 
+## 프로젝트 설치 및 실행 방법
+### 코드 불러오기
+```
+git clone https://github.com/lemonpie313/spartaNodejs07-tickets.git .
+```
+
+### 백엔드
+#### 2. 패키지 설치
+```
+cd backend
+npm install
+```
+
+#### 3. .env 파일 생성
+```
+PORT=3000
+DB_HOST="사용할 RDS 엔드포인트"
+DB_PORT=사용할 RDS 포트(3306)
+DB_USERNAME="사용할 RDS의 계정이름"
+DB_PASSWORD="사용할 RDS의 비밀번호"
+DB_NAME="사용할 RDS DB 이름"
+DB_SYNC=true
+JWT_ACCESS_SECRET_KEY="jwt 토큰 시크릿 키(임의 지정)"
+PASSWORD_HASH=10
+```
+
+#### 4. 서버 실행
+```
+npm run start:dev
+```
+
+#### 5. 서버 접속
+- ```localhost:3000/api``` 로 접속
+- swagger 를 이용하여 API 테스트 가능
+
+
+### 프론트엔드
+#### 2. 패키지 설치
+```
+# 디렉토리가 backend일 경우 > cd ..
+cd frontend
+npm install
+```
+
+#### 3. 서버 실행
+```
+npm start
+```
+#### 4. 서버 접속
+- ```localhost:3000``` 로 접속
+
+
 ## Github Commit Rules
 | 작업 타입	| 작업내용 |
 |------|------|
