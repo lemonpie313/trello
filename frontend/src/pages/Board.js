@@ -63,9 +63,18 @@ function Board() {
 
   const onDragEnd = (result) => {
     if (!result.destination) return;
-    const { source, destination } = result;
+    const { source, destination, type } = result;
 
-    if (source.droppableId !== destination.droppableId) {
+    if (type === 'COLUMN') {
+      const newOrder = Array.from(Object.keys(columns));
+      const [removed] = newOrder.splice(source.index, 1);
+      newOrder.splice(destination.index, 0, removed);
+      const newColumns = {};
+      newOrder.forEach(key => {
+        newColumns[key] = columns[key];
+      });
+      setColumns(newColumns);
+    } else {
       const sourceColumn = columns[source.droppableId];
       const destColumn = columns[destination.droppableId];
       const sourceTasks = [...sourceColumn.tasks];
@@ -81,18 +90,6 @@ function Board() {
         [destination.droppableId]: {
           ...destColumn,
           tasks: destTasks
-        }
-      });
-    } else {
-      const column = columns[source.droppableId];
-      const copiedTasks = [...column.tasks];
-      const [removed] = copiedTasks.splice(source.index, 1);
-      copiedTasks.splice(destination.index, 0, removed);
-      setColumns({
-        ...columns,
-        [source.droppableId]: {
-          ...column,
-          tasks: copiedTasks
         }
       });
     }
@@ -208,63 +205,71 @@ function Board() {
 
       <main className="board-container">
         <DragDropContext onDragEnd={onDragEnd}>
-          {Object.values(columns).map((column) => (
-            <div className="column" key={column.id}>
-              {editingListId === column.id ? (
-                <input
-                  type="text"
-                  value={column.title}
-                  onChange={(e) => updateListTitle(column.id, e.target.value)}
-                  onBlur={() => finishEditingList(column.id)}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') finishEditingList(column.id);
-                  }}
-                  autoFocus
-                />
-              ) : (
-                <h3>
-                  {column.title}
-                  <button className="icon-button" onClick={() => startEditingList(column.id)}>
-                    <Edit2 size={16} />
-                  </button>
-                  <button className="icon-button" onClick={() => deleteList(column.id)}>
-                    <Trash2 size={16} />
-                  </button>
-                </h3>
-              )}
-              <Droppable droppableId={column.id}>
-                {(provided, snapshot) => (
-                  <div
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                    className={`task-list ${snapshot.isDraggingOver ? 'dragging-over' : ''}`}
-                  >
-                    {column.tasks.map((task, index) => (
-                      <Draggable key={task.id} draggableId={task.id} index={index}>
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className={`task ${snapshot.isDragging ? 'dragging' : ''}`}
-                            onClick={() => openTaskDetail(task)}
-                          >
-                            <h4>{task.title}</h4>
-                            {task.date && <p>{task.date}</p>}
+          <Droppable droppableId="all-columns" direction="horizontal" type="COLUMN">
+            {(provided) => (
+              <div
+                className="column-container"
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+              >
+                {Object.keys(columns).map((columnId, index) => (
+                  <Draggable draggableId={columnId} index={index} key={columnId}>
+                    {(provided) => (
+                      <div
+                        className="column"
+                        {...provided.draggableProps}
+                        ref={provided.innerRef}
+                      >
+                        <h3 {...provided.dragHandleProps}>
+                          {columns[columnId].title}
+                          <div className="icon-buttons">
+                            <button className="icon-button" onClick={() => startEditingList(columnId)}>
+                              <Edit2 size={16} />
+                            </button>
+                            <button className="icon-button" onClick={() => deleteList(columnId)}>
+                              <Trash2 size={16} />
+                            </button>
                           </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-              <button className="add-task-btn" onClick={() => addNewTask(column.id)}>
-                <PlusCircle size={16} />
-                Add a card
-              </button>
-            </div>
-          ))}
+                        </h3>
+                        <Droppable droppableId={columnId} type="TASK">
+                          {(provided, snapshot) => (
+                            <div
+                              {...provided.droppableProps}
+                              ref={provided.innerRef}
+                              className={`task-list ${snapshot.isDraggingOver ? 'dragging-over' : ''}`}
+                            >
+                              {columns[columnId].tasks.map((task, index) => (
+                                <Draggable key={task.id} draggableId={task.id} index={index}>
+                                  {(provided, snapshot) => (
+                                    <div
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                      className={`task ${snapshot.isDragging ? 'dragging' : ''}`}
+                                      onClick={() => openTaskDetail(task)}
+                                    >
+                                      <h4>{task.title}</h4>
+                                      {task.date && <p>{task.date}</p>}
+                                    </div>
+                                  )}
+                                </Draggable>
+                              ))}
+                              {provided.placeholder}
+                            </div>
+                          )}
+                        </Droppable>
+                        <button className="add-task-btn" onClick={() => addNewTask(columnId)}>
+                          <PlusCircle size={16} />
+                          Add a card
+                        </button>
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
         </DragDropContext>
         <div className="add-list">
           <input

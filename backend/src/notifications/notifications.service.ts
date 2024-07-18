@@ -32,9 +32,17 @@ export class NotificationsService {
         if (!user) {
             throw new Error('User not found')
         }
-        return this.notificationsRepository.find({
-            where: {user},
-            order: { createdAt: 'DESC'}
-        })
+        const notifications = await this.notificationsRepository.createQueryBuilder("notification")
+        .leftJoinAndSelect("notification.user", "user")
+        .select([
+          "notification.notificationId",
+          "notification.message",
+          "notification.createdAt"
+        ])
+        .where("user.userId = :userId", { userId: user.userId })
+        .orderBy("notification.createdAt", "DESC")
+        .getMany();
+  
+      return notifications;
     }
 }
